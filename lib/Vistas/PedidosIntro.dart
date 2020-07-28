@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 
 import '../navDrawer.dart';
-import 'ClientesIntro.dart';
+import 'PedidosManto.dart';
 
 class PedidosIntro extends StatefulWidget {
   PedidosIntro({Key key}) : super(key: key);
@@ -152,7 +152,7 @@ class _PedidosIntroState extends State<PedidosIntro> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ClientesIntro(),
+        builder: (context) => PedidosIntro(),
       ),
     );
   }

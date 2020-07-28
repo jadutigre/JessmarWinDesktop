@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:jessmarwindesk/Domains/pedido.dart';
 import 'package:jessmarwindesk/Service/jessmarService.dart';
-import 'package:jessmarwindesk/Vistas/ClientesIntro.dart';
+import 'package:jessmarwindesk/Vistas/PedidosManto.dart';
 
 class ListaPedidos  extends StatefulWidget {
   ListaPedidos({Key key}) : super(key: key);
@@ -85,6 +85,12 @@ class _ListaPedidosState extends State<ListaPedidos> {
         appBar: new AppBar(
           title: new Text("Lista de Pedidos"),
         ),
+        floatingActionButton: new FloatingActionButton(
+          child: new Icon(Icons.add),
+          onPressed: () {
+            // TODO add your logic here to add stuff
+          },
+        ),
         body: new SingleChildScrollView(
           child: futureBuilder,
         )
@@ -106,15 +112,18 @@ class _ListaPedidosState extends State<ListaPedidos> {
           children: <Widget>[
 
             new ListTile(
-//              title: new Text(values[index].nombre+" "+values[index].nombre+" "+values[index].nombre+" "+values[index].nombre+" "+values[index].nombre+" "+values[index].nombre),
- //            title: new Text(AppLocalizations.of(context).reservafiltro +values[index].idreserva.toString()+ AppLocalizations.of(context).nombrefiltro+values[index].nombre),
-              title: new Text( values[index].id.toString()+" "+values[index].fechapedido.toString()),
+              title: new Text(
+                      values[index].id.toString()+" "+
+                      values[index].fechapedido.toString()+" "+
+                      " 0001"+
+                      " Jaime Alejandro Delgado Uc"
+              ),
 //              subtitle: new Text(
-//                  "F.Llegada: "+values[index].fechaentrada+
-//                      " F.Salida: "+values[index].fechasalida+
-//                      " Agencia: "+values[index].idagencia+
-//                      " Procedencia: "+values[index].idpais+
-//                      " Paquete: "+values[index].idpaquete
+//                       "F.Llegada: "+
+//                      " F.Salida: "+
+//                      " Agencia: "+
+//                      " Procedencia: "+
+//                      " Paquete: "
 //              ),
 //              isThreeLine: true,
               onTap: (){
@@ -134,9 +143,8 @@ class _ListaPedidosState extends State<ListaPedidos> {
                 //   throw Exception('Failed to load post');
                 //   }
                 // }
-
                 //Navigator.push(context, new MaterialPageRoute(builder: (context) => DetailPage(values[index])));
-                Navigator.push(context, new MaterialPageRoute(builder: (context) => ClientesIntro()));
+                Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosManto( pedido: values[index])));
               },
             ),
             new Divider(height: 2.0,),

@@ -1,4 +1,4 @@
-class Clientes{
+class Cliente{
 
   int id;
   double iva;
@@ -12,10 +12,10 @@ class Clientes{
   String ciudad;
   int diascred;
 
-  Clientes({this.id, this.iva, this.nucta, this.telefono,this.rfc,this.nombre,this.email,this.observ,this.direccion,this.ciudad,this.diascred});
+  Cliente({this.id, this.iva, this.nucta, this.telefono,this.rfc,this.nombre,this.email,this.observ,this.direccion,this.ciudad,this.diascred});
 
-  factory Clientes.fromJson(Map<String, dynamic> parsedJson){
-    return Clientes(
+  factory Cliente.fromJson(Map<String, dynamic> parsedJson){
+    return Cliente(
         id: parsedJson['id'],
         nucta : parsedJson['nucta'],
         telefono : parsedJson['telefono'],

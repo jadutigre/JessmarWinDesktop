@@ -27,19 +27,19 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
             padding: EdgeInsets.all(16.0),
             child: GridView.count(
               crossAxisCount: 3,
-              crossAxisSpacing: 4.0,
+              crossAxisSpacing: 22.0,
               mainAxisSpacing: 8.0,
               children: <Widget>[
-                        RaisedButton(
-                        child: Image.asset("images/pedidos.jpg"),
-                        color: Theme.of(context).accentColor,
-                        elevation: 0.0,
-                        splashColor: Colors.blueGrey,
-                        onPressed: actionButtonRaised,
-                      ),
+                  RaisedButton(
+                  child: Image.asset("images/pedidos.jpg"),
+                  color: Theme.of(context).backgroundColor,
+                  elevation: 0.0,
+                  splashColor: Colors.blueGrey,
+                  onPressed: actionButtonRaised,
+                ),
                 RaisedButton(
-                  child: Image.asset("images/notadeventa.jpg"),
-                  color: Theme.of(context).accentColor,
+                  child: Image.asset("images/notaventa.png"),
+                  color: Theme.of(context).backgroundColor,
                   elevation: 0.0,
                   splashColor: Colors.blueGrey,
                   onPressed: () {
@@ -48,7 +48,7 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
                 ),
                 RaisedButton(
                   child: Image.asset("images/factura.jpg"),
-                  color: Theme.of(context).accentColor,
+                  color: Theme.of(context).backgroundColor,
                   elevation: 0.0,
                   splashColor: Colors.blueGrey,
                   onPressed: () {
@@ -57,7 +57,7 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
                 ),
                 RaisedButton(
                   child: Image.asset("images/inventarios.jpg"),
-                  color: Theme.of(context).accentColor,
+                  color: Theme.of(context).backgroundColor,
                   elevation: 0.0,
                   splashColor: Colors.blueGrey,
                   onPressed: () {
@@ -66,7 +66,7 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
                 ),
                 RaisedButton(
                   child: Image.network("https://placeimg.com/500/500/any"),
-                  color: Theme.of(context).accentColor,
+                  color: Theme.of(context).backgroundColor,
                   elevation: 0.0,
                   splashColor: Colors.blueGrey,
                   onPressed: () {
@@ -75,7 +75,7 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
                 ),
                 RaisedButton(
                   child: Image.asset("images/informes.jpg"),
-                  color: Theme.of(context).accentColor,
+                  color: Theme.of(context).backgroundColor,
                   elevation: 0.0,
                   splashColor: Colors.blueGrey,
                   onPressed: () {

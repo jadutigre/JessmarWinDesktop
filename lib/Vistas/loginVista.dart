@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:jessmarwindesk/Controllers/autentica.dart';
+import 'package:jessmarwindesk/Domains/respuesta.dart';
 import 'package:jessmarwindesk/Domains/tipoLenguaje.dart';
+import 'package:jessmarwindesk/Domains/usuario.dart';
+import 'package:jessmarwindesk/Service/jessmarService.dart';
 import 'package:jessmarwindesk/Vistas/MenuPrincipal.dart';
 import '../localization.dart';
 
@@ -23,8 +27,11 @@ class _MyAppState extends State<LoginVista> {
     this.getSWData();
   }
 
-  void getSWData(){
-//      tiposlenguajes = getListaTiposLenguajes();
+  Future<void> getSWData() async {
+       JessmarService service = new JessmarService();
+       Usuario usuario  = await service.getOneUsuario("jdelgado");
+       print(""+usuario.nombre);
+
 //     clubes = getListaClubVacacional();
   }
 
@@ -299,14 +306,53 @@ class _MyAppState extends State<LoginVista> {
     //    });
   }
 
-  void actionButtonRaised(){
+  Future<void> actionButtonRaised() async {
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-       builder: (context) =>  MenuPrincipal()
-      ),
-    );
+    Autentica autentica = new Autentica();
+    String claveusuario =  _userController.text;
+    String password = _passwordController.text;
+
+      print("Clave "+claveusuario+"Password "+password);
+      Respuesta message = await autentica.validaAutenticacion(claveusuario, password);
+
+      if(message.status==1){
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>  MenuPrincipal()
+              ),
+            );
+
+      }else{
+
+            // set up the button
+            Widget okButton = FlatButton(
+              child: Text("OK"),
+              onPressed: () => Navigator.pop(context, true),
+            );
+
+            // set up the AlertDialog
+            AlertDialog alert = AlertDialog(
+              title: Text("My title"),
+              content: Text(message.message),
+              actions: [
+                okButton,
+              ],
+            );
+
+            // show the dialog
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return alert;
+              },
+            );
+
+
+
+      }
+
 
   }
 

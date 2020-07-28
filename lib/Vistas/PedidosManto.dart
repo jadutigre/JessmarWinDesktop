@@ -1,28 +1,77 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:jessmarwindesk/Domains/cliente.dart';
 import 'package:jessmarwindesk/Domains/pedido.dart';
+import 'package:jessmarwindesk/Domains/pedidos.dart';
+import 'package:jessmarwindesk/Domains/vendedor.dart';
 import 'package:jessmarwindesk/Service/jessmarService.dart';
 import 'package:jessmarwindesk/Vistas/PedidosIntro.dart';
 import 'package:color_panel/color_panel.dart';
 import 'dart:io' show Platform;
 
-class ClientesIntro extends StatefulWidget {
-  ClientesIntro({Key key}) : super(key: key);
-  _ClientesIntroState createState() => _ClientesIntroState();
+class PedidosManto extends StatefulWidget {
+  Pedido pedido;
+  PedidosManto({Key key, @required this.pedido}) : super(key: key);
+
+  _PedidosMantoState createState() => _PedidosMantoState();
 }
 
 
-class _ClientesIntroState extends State<ClientesIntro> {
+class _PedidosMantoState extends State<PedidosManto> {
+
+  Future<Pedido> fpedido;
+  Future<List<Pedido>> fpedidos;
+  Future<List<Cliente>> fclientes;
+  Future<List<Vendedor>> fvendedores;
+
+//  List<Pedido> pedidos = List<Pedido>();
+  String valor = "";
+  Item selectedUser;
+
+  List<Item> users = <Item>[
+    const Item('Android',Icon(Icons.android,color:  const Color(0xFF167F67),)),
+    const Item('Flutter',Icon(Icons.flag,color:  const Color(0xFF167F67),)),
+    const Item('ReactNative',Icon(Icons.format_indent_decrease,color:  const Color(0xFF167F67),)),
+    const Item('iOS',Icon(Icons.mobile_screen_share,color:  const Color(0xFF167F67),)),
+  ];
+
+  Pedido _currentpedido;
+  Cliente _currentcliente;
+  Vendedor _currentvendedor;
+
+  String _selectedDate = 'Tap to select date';
 
 
-  List<Pedido> pedidos = List<Pedido>();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime d = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2015),
+      lastDate: DateTime(2030),
+    );
+    if (d != null)
+      setState(() {
+        _selectedDate = new DateFormat.yMMMMd("en_US").format(d);
+      });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getData();
+  }
 
 
 
-  Future<List<Pedido>> _getData() async {
-    print("Servicio Async");
+  void _getData()  {
+    Pedido pedido = widget.pedido;
+    print("Servicio  _getData");
     JessmarService service = JessmarService();
-    pedidos = await service.getListaPedidos();
-    return pedidos;
+    fpedido = service.getOnePedido(pedido.id);
+    fpedidos    = service.getListaPedidos();
+    fclientes   = service.getListaClientes();
+    fvendedores = service.getListaVendedores();
   }
 
 
@@ -31,7 +80,7 @@ class _ClientesIntroState extends State<ClientesIntro> {
   Widget build(BuildContext context) {
 
     var futureBuilder = new FutureBuilder(
-        future: _getData(),
+        future: fpedidos,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
@@ -49,17 +98,164 @@ class _ClientesIntroState extends State<ClientesIntro> {
                       Container(
                         padding: const EdgeInsets.all(16.0),
                         //decoration: BoxDecoration(border: Border.all(width: 0.0)),
-                        child: new TextField(
-                          //        controller: _searchview,
-                          decoration: InputDecoration(
-                              hintText: "Hola Mundo"
-//                          hintStyle: new TextStyle(color: Colors.grey[300]),
-                          ),
-                          textAlign: TextAlign.center,
+                        child:
+
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+
+
+                            new Flexible(
+                              child: Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: new FutureBuilder(
+                                    future: fclientes,
+                                    builder: (BuildContext context,AsyncSnapshot<List<Cliente>> snapshot) {
+                                      if (!snapshot.hasData) return CircularProgressIndicator();
+                                      return DropdownButton<Cliente>(
+                                        isExpanded: true,
+                                        value: _currentcliente,
+                                        icon: Icon(Icons.check_circle_outline),
+                                        hint: Text("Choose"),
+                                        items: snapshot.data
+                                            .map((items) => DropdownMenuItem<Cliente>(
+                                          child: Text(items.nombre),
+                                          value: items,
+                                        ))
+                                            .toList(),
+                                        onChanged: (Cliente newValue) {
+                                          setState(() => this._currentcliente = newValue);
+                                        },
+                                      );
+                                    }),
+                              ),
+                            ),
+
+                            SizedBox(
+                              height: 15.0,
+                            ),
+
+
+                            InkWell(
+                              child: Text(
+                                  _selectedDate,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Color(0xFF000000))
+                              ),
+                              onTap: (){
+                                _selectDate(context);
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.calendar_today),
+                              tooltip: 'Tap to open date picker',
+                              onPressed: () {
+                                _selectDate(context);
+                              },
+                            ),
+
+                            SizedBox(
+                              height: 15.0,
+                            ),
+
+
+//                            new Flexible(
+//                              child: Padding(
+//                                padding: const EdgeInsets.all(8.0),
+//                                child: DropdownButton<Item>(
+//                                  hint:  Text("Select item"),
+//                                  value: selectedUser,
+//                                  onChanged: (Item Value) {
+//                                    setState(() {
+//                                      selectedUser = Value;
+//                                    });
+//                                  },
+//                                  items: users.map((Item user) {
+//                                    return  DropdownMenuItem<Item>(
+//                                      value: user,
+//                                      child: Row(
+//                                        children: <Widget>[
+//                                          user.icon,
+//                                          SizedBox(width: 10,),
+//                                          Text(
+//                                            user.name,
+//                                            style:  TextStyle(color: Colors.black),
+//                                          ),
+//                                        ],
+//                                      ),
+//                                    );
+//                                  }).toList(),
+//                                ),
+//                              ),
+//                            ),
+
+//                            new Flexible(
+//                              child: Padding(
+//                                padding: const EdgeInsets.all(8.0),
+//                                child: TextField(
+//                                  decoration: InputDecoration(
+//                                    prefixIcon: Icon(Icons.lock),
+//                                    labelText: "Text2",
+//                                  ),
+//                                ),
+//                              ),
+//                            ),
+
+
+//                            SizedBox(
+//                              height: 5.0,
+//                            ),
+//
+//
+//
+//                            new Flexible(
+//                              child: Padding(
+//                                padding: const EdgeInsets.all(5.0),
+//                                child: TextField(
+//                                  decoration: InputDecoration(
+//                                    prefixIcon: Icon(Icons.lock),
+//                                    labelText: "Text3",
+//                                  ),
+//                                ),
+//                              ),
+//                            ),
+
+
+
+                            new Flexible(
+                              child: Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: new FutureBuilder(
+                                    future: fvendedores,
+                                    builder: (BuildContext context,AsyncSnapshot<List<Vendedor>> snapshot) {
+                                      if (!snapshot.hasData) return CircularProgressIndicator();
+                                      return DropdownButton<Vendedor>(
+                                        isExpanded: true,
+                                        value: _currentvendedor,
+                                        icon: Icon(Icons.check_circle_outline),
+                                        hint: Text("Choose"),
+                                        items: snapshot.data
+                                            .map((items) => DropdownMenuItem<Vendedor>(
+                                          child: Text(items.nombre),
+                                          value: items,
+                                        ))
+                                            .toList(),
+                                        onChanged: (Vendedor newValue) {
+                                          setState(() => this._currentvendedor = newValue);
+                                        },
+                                      );
+                                    }),
+                              ),
+                            ),
+
+
+
+          ],
                         ),
+
+
                       ),
-
-
 
                       Container(
                           constraints: BoxConstraints.expand(
@@ -144,7 +340,7 @@ class _ClientesIntroState extends State<ClientesIntro> {
                 //   }
                 // }
                 //Navigator.push(context, new MaterialPageRoute(builder: (context) => DetailPage(values[index])));
-                Navigator.push(context, new MaterialPageRoute(builder: (context) => ClientesIntro()));
+                Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosIntro()));
               },
             ),
             new Divider(height: 2.0,),
@@ -155,4 +351,12 @@ class _ClientesIntroState extends State<ClientesIntro> {
   }
 
 
+
 }
+
+class Item {
+  const Item(this.name,this.icon);
+  final String name;
+  final Icon icon;
+}
+
