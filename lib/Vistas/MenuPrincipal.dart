@@ -65,7 +65,7 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
                   },
                 ),
                 RaisedButton(
-                  child: Image.network("https://placeimg.com/500/500/any"),
+                  child: Image.asset("images/informes.jpg"),
                   color: Theme.of(context).backgroundColor,
                   elevation: 0.0,
                   splashColor: Colors.blueGrey,

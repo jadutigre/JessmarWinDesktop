@@ -314,7 +314,6 @@ class _MyAppState extends State<LoginVista> {
 
       print("Clave "+claveusuario+"Password "+password);
       Respuesta message = await autentica.validaAutenticacion(claveusuario, password);
-
       if(message.status==1){
 
             Navigator.push(

@@ -48,6 +48,8 @@ dependencies:
   flutter_svg: ^0.17.1
   shared_preferences: ^0.5.7
   flutter_signature_pad: ^2.0.2
+  nice_button: ^0.1.7
+  date_format: ^1.0.8
 #  file_chooser:
 #    git:
 #      url: git://github.com/google/flutter-desktop-embedding.git
