@@ -380,39 +380,7 @@ class _PedidosMantoState extends State<PedidosManto> {
 
 
           /* Lista de Productos */
-//          Container(
-//          child: Row(
-//          mainAxisAlignment: MainAxisAlignment.start,
-//          children: <Widget>[
-//
-//            NiceButton(
-//              mini: true,
-//              icon: Icons.add,
-//              background: firstColor,
-//              onPressed: () {
-//                print("hello");
-//              },
-//            ),
-//            NiceButton(
-//              mini: true,
-//              icon: Icons.edit,
-//              background: firstColor,
-//              onPressed: () {
-//                print("hello");
-//              },
-//            ),
-//            NiceButton(
-//              mini: true,
-//              icon: Icons.delete,
-//              background: firstColor,
-//              onPressed: () {
-//                print("hello");
-//              },
-//            )
-//
-//          ]
-//          )
-//          ),
+
 
 
 
@@ -458,6 +426,10 @@ class _PedidosMantoState extends State<PedidosManto> {
 
 
 
+
+
+
+
             Expanded(
               flex: 1,
               child: Container(
@@ -471,6 +443,53 @@ class _PedidosMantoState extends State<PedidosManto> {
 
                   Column(
                     children: <Widget>[
+
+//          Container(
+//          child: Row(
+//          mainAxisAlignment: MainAxisAlignment.start,
+//          children: <Widget>[
+//
+//            NiceButton(
+//              mini: true,
+//              icon: Icons.add,
+//              background: firstColor,
+//              onPressed: () {
+//                print("hello");
+//              },
+//            ),
+//            NiceButton(
+//              mini: true,
+//              icon: Icons.edit,
+//              background: firstColor,
+//              onPressed: () {
+//                print("hello");
+//              },
+//            ),
+//            NiceButton(
+//              mini: true,
+//              icon: Icons.delete,
+//              background: firstColor,
+//              onPressed: () {
+//                print("hello");
+//              },
+//            )
+//
+//          ]
+//          )
+//          ),
+
+
+                        NiceButton(
+
+                          width: 30.0,
+                          mini: true,
+                          icon: Icons.add,
+                          background: firstColor,
+                          onPressed: () {
+                            newRecord();
+                          },
+                        ),
+
 
 
                        Visibility(
@@ -572,6 +591,8 @@ class _PedidosMantoState extends State<PedidosManto> {
 
 
 
+
+
           Expanded(
           flex: 1,
           child: Container(
@@ -619,20 +640,21 @@ class _PedidosMantoState extends State<PedidosManto> {
         ),
 
         floatingActionButton: Column(
+
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              FloatingActionButton(
-                child: Icon(
-                    Icons.add
-                ),
-                onPressed: () {
-                  //...
-                },
-                heroTag: null,
-              ),
-              SizedBox(
-                height: 10,
-              ),
+//              FloatingActionButton(
+//                child: Icon(
+//                    Icons.add
+//                ),
+//                onPressed: () {
+//                  //...
+//                },
+//                heroTag: null,
+//              ),
+//              SizedBox(
+//                height: 10,
+//              ),
               FloatingActionButton(
                 child: Icon(
                     Icons.save
@@ -666,7 +688,7 @@ class _PedidosMantoState extends State<PedidosManto> {
 
   Widget createDataTable(BuildContext context, AsyncSnapshot snapshot) {
 
-    Pedido pedido = snapshot.data["onepedido"];
+    Pedido pedido = snapshot.data["onepedido"] ;
     values = pedido.pedidosdetalle;
 
     return   DataTable(
@@ -742,7 +764,7 @@ class _PedidosMantoState extends State<PedidosManto> {
             DataCell(IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
-                //_deleteEmployee(employee);
+                _deleteRecord(itemRow);
             },
             )
             )
@@ -824,6 +846,14 @@ class _PedidosMantoState extends State<PedidosManto> {
 
   }
 
+  newRecord() {
+    _idDetalleController.text = "0";
+//    _articuloController.text = _detalle.articulodescripcion;
+//    _cantidadController.text = _detalle.cantidad.toString();
+//    _precioController.text = _detalle.precio.toString();
+  }
+
+
   editRecord(Pedido_detalle  itemRow) {
     var _detalle = itemRow;
     _idDetalleController.text = _detalle.id.toString();
@@ -834,14 +864,13 @@ class _PedidosMantoState extends State<PedidosManto> {
 
   _deleteRecord(Pedido_detalle detail) async {
 
-//    values = await service.();
+             await service.deletePedidoDetalleById(detail.id.toString());
+             values.remove(detail);
 
-    //_showProgress('Deleting Employee...');
-//    Services.deleteEmployee(employee.id).then((result) {
-//      if ('success' == result) {
-//        _getEmployees(); // Refresh after delete...
-//      }
-//    });
+    //values = await service.getListaPedidoDetalleByIdPedido(onepedido.id.toString());
+
+    setState(() {});
+    print("registroBorrado");
   }
 
 
@@ -849,19 +878,38 @@ class _PedidosMantoState extends State<PedidosManto> {
 
 
   addRecord(){
+
+     // int.parse( _idDetalleController.text );
+
      Pedido_detalle value = new Pedido_detalle();
-     value.id=0;
+     value.id=int.parse(_idDetalleController.text);
      value.articulo_id=_currentarticulo.id;
      value.articulodescripcion=_currentarticulo.descripcion;
      value.cantidad= double.parse( _cantidadController.text );
      value.precio= double.parse( _precioController.text );
      value.total= value.cantidad * value.precio;
      value.pedido_id=int.parse(_numberpedidoController.text);
-     values.add(value);
+
+     if(value.id==0){
+           values.add(value);
+     }else {
+           int index = 0;
+           for (Pedido_detalle element in values) {
+             if (element.id == int.parse(_idDetalleController.text)) {
+               values[index] = value;
+               break;
+             }
+             index = index + 1;
+           }
+     }
      setState(() {});
+
   }
 
+
+
   saveRecord() async {
+
       Pedido pedido = new Pedido();
       pedido.id = int.parse(_numberpedidoController.text);
       pedido.tipopedido_id=1;
@@ -873,7 +921,6 @@ class _PedidosMantoState extends State<PedidosManto> {
       pedido.usuario = "jdelgado";
       pedido.pedidosdetalle = values;
       await service.salvaOnePedido(pedido);
-
       actionButtonRaised();
 
   }

@@ -1,8 +1,10 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:jessmarwindesk/Vistas/ListaArticulos.dart';
 import 'package:jessmarwindesk/Vistas/ListaPedidos.dart';
 
+import 'ListaClientes.dart';
 import 'PedidosIntro.dart';
 
 class MenuPrincipal extends StatefulWidget {
@@ -69,18 +71,14 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
                   color: Theme.of(context).backgroundColor,
                   elevation: 0.0,
                   splashColor: Colors.blueGrey,
-                  onPressed: () {
-                    // Perform some action
-                  },
+                  onPressed: actionButtonArticulos,
                 ),
                 RaisedButton(
-                  child: Image.asset("images/informes.jpg"),
+                  child: Image.asset("images/clientes.png"),
                   color: Theme.of(context).backgroundColor,
                   elevation: 0.0,
                   splashColor: Colors.blueGrey,
-                  onPressed: () {
-                    // Perform some action
-                  },
+                  onPressed: actionButtonClientes,
                 ),
                   ],
             ),
@@ -94,17 +92,33 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
 
 
   Future<void> actionButtonRaised() async {
-
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ListaPedidos(),
       ),
     );
-
-
   }
 
+    Future<void> actionButtonArticulos() async {
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ListaArticulos(),
+        ),
+      );
+  }
+
+  Future<void> actionButtonClientes() async {
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ListaClientes(),
+      ),
+    );
+  }
 
 
 

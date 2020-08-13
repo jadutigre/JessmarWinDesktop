@@ -6,14 +6,40 @@ import 'package:jessmarwindesk/Domains/articulo.dart';
 import 'package:jessmarwindesk/Domains/cliente.dart';
 import 'package:jessmarwindesk/Domains/cliente.dart';
 import 'package:jessmarwindesk/Domains/clientes.dart';
+import 'package:jessmarwindesk/Domains/pedido_detalle.dart';
 import 'package:jessmarwindesk/Domains/pedidos.dart';
 import 'package:jessmarwindesk/Domains/pedido.dart';
+import 'package:jessmarwindesk/Domains/pedidos_detalles.dart';
 import 'package:jessmarwindesk/Domains/usuario.dart';
 import 'package:jessmarwindesk/Domains/vendedor.dart';
 import 'package:jessmarwindesk/Domains/vendedores.dart';
 
 class JessmarService{
 
+  Future<List<Articulo>> getListaArticulos() async {
+    print("getListaArticulos");
+
+    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaArticulos';
+    Map<String, String> headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Accept": "application/json"
+    };
+    //Map<String, dynamic>  body = {'nohotel': nohotel};
+
+    Response response = await post(
+        uri,
+        headers: headers
+    );
+
+    String responseBody = utf8.decode(response.bodyBytes);
+
+    var json = jsonDecode(responseBody)['payload'];
+    List<Articulo> articulos = Articulos
+        .fromJson(json)
+        .articulo;
+    //print(json);
+    return articulos;
+  }
 
 
 
@@ -109,6 +135,42 @@ class JessmarService{
     return articulos;
 
   }
+
+
+
+  Future<List<Pedido_detalle>> getListaPedidoDetalleByIdPedido(String id) async {
+    print("getListaPedidoDetalleByIdPedido");
+
+    List<Pedido_detalle> detailPedido;
+
+    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaPedidoDetalleByIdPedido';
+    Map<String, String> headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Accept": "application/json"
+    };
+
+    Map<String, dynamic>  body = {'id': id};
+
+    Response response = await post(
+        uri,
+        headers: headers,
+        body : body
+    );
+
+    String responseBody = utf8.decode(response.bodyBytes);
+
+    if( responseBody!=null && responseBody.length!=0 ){
+      var json = jsonDecode(responseBody)['payload'];
+      print(json);
+      detailPedido = Pedidos_detalles
+          .fromJson(json).pedidosdetalle;
+
+    }
+
+    return detailPedido;
+
+  }
+
 
 
 
@@ -241,6 +303,44 @@ class JessmarService{
     return pedido;
 
   }
+
+  Future<Map> deletePedidoDetalleById( String id ) async {
+    print("deletePedidoDetalleById");
+    Map json;
+
+    try {
+
+      String uri = 'http://localhost:8084/JessmarServices/jessmar/deletePedidoDetalleById';
+      Map<String, String> headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "application/json"
+      };
+      Map<String, dynamic>  body = {'id': id};
+
+      Response response = await post(
+          uri,
+          headers: headers,
+          body: body
+      );
+
+      String responseBody = utf8.decode(response.bodyBytes);
+      //print(responseBody);
+
+      if( responseBody!=null && responseBody.length!=0 ){
+        json = jsonDecode(responseBody)['payload'];
+        //print(json);
+      }
+
+    } catch (e) {    // <-- removing the on Exception clause
+      print(e);
+    }
+
+    return json;
+
+  }
+
+
+
 
 
   Future<Cliente> getOneCliente( String id ) async {

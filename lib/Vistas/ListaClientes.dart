@@ -2,24 +2,26 @@
 
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:jessmarwindesk/Domains/articulo.dart';
+import 'package:jessmarwindesk/Domains/cliente.dart';
 import 'package:jessmarwindesk/Domains/pedido.dart';
 import 'package:jessmarwindesk/Domains/pedido_detalle.dart';
 import 'package:jessmarwindesk/Service/jessmarService.dart';
 import 'package:jessmarwindesk/Vistas/PedidosManto.dart';
 
-class ListaPedidos  extends StatefulWidget {
-  ListaPedidos({Key key}) : super(key: key);
-  _ListaPedidosState createState() => _ListaPedidosState();
+class ListaClientes extends StatefulWidget {
+  ListaClientes({Key key}) : super(key: key);
+  _ListaClientesState createState() => _ListaClientesState();
 }
 
 
 
-class _ListaPedidosState extends State<ListaPedidos> {
+class _ListaClientesState extends State<ListaClientes> {
 
 
 
-  Future<List<Pedido>> fpedidos ;
-  List<Pedido> pedidos ;
+  Future<List<Cliente>> fclientes ;
+  List<Cliente> clientes ;
 
 
 
@@ -35,7 +37,7 @@ class _ListaPedidosState extends State<ListaPedidos> {
       print("Estoy Pasando Servicio Async ...");
       JessmarService service = JessmarService();
       setState(() {
-          fpedidos =  service.getListaPedidosFull();
+          fclientes = service.getListaClientes();
       });
   }
 
@@ -45,7 +47,7 @@ class _ListaPedidosState extends State<ListaPedidos> {
   Widget build(BuildContext context) {
 
     var futureBuilder = new FutureBuilder(
-        future: fpedidos,
+        future: fclientes,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
@@ -65,7 +67,7 @@ class _ListaPedidosState extends State<ListaPedidos> {
                       child: new TextField(
                         //        controller: _searchview,
                         decoration: InputDecoration(
-                          hintText: "Lista de Pedidos"
+                          hintText: "Lista de Clientes"
 //                          hintStyle: new TextStyle(color: Colors.grey[300]),
                         ),
                         textAlign: TextAlign.center,
@@ -82,23 +84,12 @@ class _ListaPedidosState extends State<ListaPedidos> {
                         padding: const EdgeInsets.all(8.0),
                         color: Colors.white,
                         alignment: Alignment.topCenter,
-                        child: ListView(
-                            children: <Widget>[
-                              SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: createDataTable(context, snapshot)
-                              )
-                            ]
-                        ),
-                   )
-
-
-
+                        child: createDataTable(context, snapshot)
+                      //                      transform: Matrix4.rotationZ(0.1),
+                    ),
 
                   ],
                 );
-
-
 
         }
       }
@@ -108,7 +99,7 @@ class _ListaPedidosState extends State<ListaPedidos> {
 
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text("Lista de Pedidos"),
+          title: new Text("Lista de Clientes"),
         ),
         floatingActionButton: new FloatingActionButton(
           child: new Icon(Icons.add),
@@ -141,7 +132,7 @@ class _ListaPedidosState extends State<ListaPedidos> {
 
   Widget createDataTable(BuildContext context, AsyncSnapshot snapshot) {
 
-    List<Pedido> values = snapshot.data;
+    List<Cliente> values = snapshot.data;
 
     return   DataTable(
       onSelectAll: (b) {},
@@ -151,20 +142,20 @@ class _ListaPedidosState extends State<ListaPedidos> {
           label: Text('ID'),
         ),
         DataColumn(
-          label: Text('Fecha'),
+          label: Text('Nombre'),
         ),
         DataColumn(
-          label: Text('Nombre Cliente'),
+          label: Text('RFC'),
         ),
         DataColumn(
-          label: Text('Vendedor Nombre'),
+          label: Text('Telefono'),
         ),
         DataColumn(
-          label: Text('Descripcion Pedido '),
+          label: Text('Email'),
         ),
-        DataColumn(
-          label: Text('Area Entrega'),
-        ),
+//        DataColumn(
+//          label: Text('Area Entrega'),
+//        ),
       ],
       rows: values
           .map(
@@ -175,57 +166,57 @@ class _ListaPedidosState extends State<ListaPedidos> {
               showEditIcon: true,
               placeholder: false,
               onTap:() {
-              Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosManto( pedido: itemRow)));
+              //Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosManto( pedido: itemRow)));
             },
             ),
             DataCell(
-              Text(itemRow.fechapedido.toString()),
+              Text(itemRow.nombre.toString()),
+              showEditIcon: false,
+              placeholder: false,
+              //onTap: actionButtonRaised,
+            ),
+            DataCell(
+              Text(itemRow.rfc.toString()),
+              showEditIcon: false,
+              placeholder: false,
+              //onTap: actionButtonRaised,
+            ),
+            DataCell(
+              Text(itemRow.telefono.toString()),
+              showEditIcon: false,
+              placeholder: false,
+              //onTap: actionButtonRaised,
+            ),
+            DataCell(
+              Text(itemRow.email.toString()),
               showEditIcon: false,
               placeholder: false,
               //onTap: actionButtonRaised,
             ),
 //            DataCell(
-//              Text(itemRow.clientes_id.toString()),
+//              Text(itemRow.vendedornombre.toString()),
 //              showEditIcon: false,
 //              placeholder: false,
 //              //onTap: actionButtonRaised,
 //            ),
-            DataCell(
-              Text(itemRow.clientenombre.toString()),
-              showEditIcon: false,
-              placeholder: false,
-              //onTap: actionButtonRaised,
-            ),
-//            DataCell(
-//              Text(itemRow.vendedor_id.toString()),
-//              showEditIcon: false,
-//              placeholder: false,
-//              //onTap: actionButtonRaised,
-//            ),
-            DataCell(
-              Text(itemRow.vendedornombre.toString()),
-              showEditIcon: false,
-              placeholder: false,
-              //onTap: actionButtonRaised,
-            ),
 //            DataCell(
 //              Text(itemRow.tipopedido_id.toString()),
 //              showEditIcon: false,
 //              placeholder: false,
 //              //onTap: actionButtonRaised,
 //            ),
-            DataCell(
-              Text(itemRow.tipopedidodescripcion.toString()),
-              showEditIcon: false,
-              placeholder: false,
-              //onTap: actionButtonRaised,
-            ),
-            DataCell(
-              Text(itemRow.areaentrega.toString()),
-              showEditIcon: false,
-              placeholder: false,
-              //onTap: actionButtonRaised,
-            ),
+//            DataCell(
+//              Text(itemRow.tipopedidodescripcion.toString()),
+//              showEditIcon: false,
+//              placeholder: false,
+//              //onTap: actionButtonRaised,
+//            ),
+//            DataCell(
+//              Text(itemRow.areaentrega.toString()),
+//              showEditIcon: false,
+//              placeholder: false,
+//              //onTap: actionButtonRaised,
+//            ),
           ],
         ),
       )
