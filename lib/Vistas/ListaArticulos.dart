@@ -6,7 +6,10 @@ import 'package:jessmarwindesk/Domains/articulo.dart';
 import 'package:jessmarwindesk/Domains/pedido.dart';
 import 'package:jessmarwindesk/Domains/pedido_detalle.dart';
 import 'package:jessmarwindesk/Service/jessmarService.dart';
+import 'package:jessmarwindesk/Vistas/MenuPrincipal.dart';
 import 'package:jessmarwindesk/Vistas/PedidosManto.dart';
+
+import 'FormArticulos.dart';
 
 class ListaArticulos  extends StatefulWidget {
   ListaArticulos({Key key}) : super(key: key);
@@ -66,7 +69,7 @@ class _ListaArticulosState extends State<ListaArticulos> {
                       child: new TextField(
                         //        controller: _searchview,
                         decoration: InputDecoration(
-                          hintText: "Lista de Articulos"
+                            hintText: "Lista de Articulos"
 //                          hintStyle: new TextStyle(color: Colors.grey[300]),
                         ),
                         textAlign: TextAlign.center,
@@ -77,15 +80,24 @@ class _ListaArticulosState extends State<ListaArticulos> {
 
 
                     Container(
-                        constraints: BoxConstraints.expand(
-                          height:  500 ,
-                        ),
-                        padding: const EdgeInsets.all(8.0),
-                        color: Colors.white,
-                        alignment: Alignment.topCenter,
-                        child: createDataTable(context, snapshot)
+                      constraints: BoxConstraints.expand(
+                        height:  500 ,
+                      ),
+                      padding: const EdgeInsets.all(8.0),
+                      color: Colors.white,
+                      alignment: Alignment.topCenter,
+                      child: ListView(
+                          children: <Widget>[
+                            SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: createDataTable(context, snapshot)
+                            )
+                          ]
+                      ),
                       //                      transform: Matrix4.rotationZ(0.1),
                     ),
+
+
 
                   ],
                 );
@@ -100,24 +112,74 @@ class _ListaArticulosState extends State<ListaArticulos> {
         appBar: new AppBar(
           title: new Text("Lista de Articulos"),
         ),
-        floatingActionButton: new FloatingActionButton(
-          child: new Icon(Icons.add),
-          onPressed: () {
+        floatingActionButton:  Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
 
-            // TODO add your logic here to add stuff
-            Pedido pedido = new Pedido();
-            pedido.id=0;
-            pedido.fechapedido= DateTime.now().toString();
-            pedido.clientes_id = 1;
-            pedido.vendedor_id = 1;
-            pedido.tipopedido_id = 1;
-            pedido.pedidosdetalle = List<Pedido_detalle>();
-            pedido.usuario = "";
-            pedido.areaentrega="";
-            Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosManto( pedido: pedido)));
 
-          },
+
+              FloatingActionButton(
+                child: Icon(
+                    Icons.arrow_back
+                ),
+                onPressed:() {
+
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (BuildContext context) =>  MenuPrincipal()),
+                            (Route<dynamic> route) => false
+                    );
+
+                },
+                heroTag: null,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              FloatingActionButton(
+                child: Icon(
+                    Icons.add
+                ),
+                onPressed: () {
+
+                      // TODO add your logic here to add stuff
+                  Articulo articulo = Articulo();
+                  articulo.id=0;
+                  Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context) => FormArticulos(articu: articulo)),
+                          (Route<dynamic> route) => false);
+
+
+                    },
+                heroTag: null,
+              )
+
+
+
+
+            ]
         ),
+
+
+
+//        new FloatingActionButton(
+//          child: new Icon(Icons.add),
+//          onPressed: () {
+//
+//            // TODO add your logic here to add stuff
+//            Pedido pedido = new Pedido();
+//            pedido.id=0;
+//            pedido.fechapedido= DateTime.now().toString();
+//            pedido.clientes_id = 1;
+//            pedido.vendedor_id = 1;
+//            pedido.tipopedido_id = 1;
+//            pedido.pedidosdetalle = List<Pedido_detalle>();
+//            pedido.usuario = "";
+//            pedido.areaentrega="";
+//            Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosManto( pedido: pedido)));
+//
+//          },
+//        ),
+
         body: new SingleChildScrollView(
           child: futureBuilder,
         )
@@ -146,15 +208,18 @@ class _ListaArticulosState extends State<ListaArticulos> {
         DataColumn(
           label: Text('Descripciòn'),
         ),
-//        DataColumn(
-//          label: Text('Vendedor Nombre'),
-//        ),
-//        DataColumn(
-//          label: Text('Descripcion Pedido '),
-//        ),
-//        DataColumn(
-//          label: Text('Area Entrega'),
-//        ),
+        DataColumn(
+          label: Text('Pasillo'),
+        ),
+        DataColumn(
+          label: Text('Anaquel'),
+        ),
+        DataColumn(
+          label: Text('Clave Sat'),
+        ),
+        DataColumn(
+          label: Text('Unidad Sat'),
+        ),
       ],
       rows: values
           .map(
@@ -165,57 +230,46 @@ class _ListaArticulosState extends State<ListaArticulos> {
               showEditIcon: true,
               placeholder: false,
               onTap:() {
-              //Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosManto( pedido: itemRow)));
+              Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context) => FormArticulos( articu: itemRow)),
+                      (Route<dynamic> route) => false);
             },
             ),
             DataCell(
-              Text(itemRow.codigo.toString()),
+              Text(   itemRow.codigo.toString()  ),
               showEditIcon: false,
               placeholder: false,
-              //onTap: actionButtonRaised,
+              //onTap: actionButtonRaised,push
             ),
-//            DataCell(
-//              Text(itemRow.clientes_id.toString()),
-//              showEditIcon: false,
-//              placeholder: false,
-//              //onTap: actionButtonRaised,
-//            ),
             DataCell(
               Text(itemRow.descripcion.toString()),
               showEditIcon: false,
               placeholder: false,
               //onTap: actionButtonRaised,
             ),
-//            DataCell(
-//              Text(itemRow.vendedor_id.toString()),
-//              showEditIcon: false,
-//              placeholder: false,
-//              //onTap: actionButtonRaised,
-//            ),
-//            DataCell(
-//              Text(itemRow.vendedornombre.toString()),
-//              showEditIcon: false,
-//              placeholder: false,
-//              //onTap: actionButtonRaised,
-//            ),
-//            DataCell(
-//              Text(itemRow.tipopedido_id.toString()),
-//              showEditIcon: false,
-//              placeholder: false,
-//              //onTap: actionButtonRaised,
-//            ),
-//            DataCell(
-//              Text(itemRow.tipopedidodescripcion.toString()),
-//              showEditIcon: false,
-//              placeholder: false,
-//              //onTap: actionButtonRaised,
-//            ),
-//            DataCell(
-//              Text(itemRow.areaentrega.toString()),
-//              showEditIcon: false,
-//              placeholder: false,
-//              //onTap: actionButtonRaised,
-//            ),
+            DataCell(
+              Text(itemRow.lugar.toString()),
+              showEditIcon: false,
+              placeholder: false,
+              //onTap: actionButtonRaised,
+            ),
+            DataCell(
+              Text(itemRow.parte.toString()),
+              showEditIcon: false,
+              placeholder: false,
+              //onTap: actionButtonRaised,
+            ),
+            DataCell(
+              Text(itemRow.cvesat.toString()),
+              showEditIcon: false,
+              placeholder: false,
+              //onTap: actionButtonRaised,
+            ),
+            DataCell(
+              Text(itemRow.unidadsat.toString()),
+              showEditIcon: false,
+              placeholder: false,
+              //onTap: actionButtonRaised,
+            ),
           ],
         ),
       )

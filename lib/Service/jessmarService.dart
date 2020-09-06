@@ -2,14 +2,28 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:jessmarwindesk/Domains/Articulos.dart';
+import 'package:jessmarwindesk/Domains/Usocfdis.dart';
 import 'package:jessmarwindesk/Domains/articulo.dart';
 import 'package:jessmarwindesk/Domains/cliente.dart';
 import 'package:jessmarwindesk/Domains/cliente.dart';
 import 'package:jessmarwindesk/Domains/clientes.dart';
+import 'package:jessmarwindesk/Domains/estado.dart';
+import 'package:jessmarwindesk/Domains/estados.dart';
+import 'package:jessmarwindesk/Domains/grupo.dart';
+import 'package:jessmarwindesk/Domains/grupos.dart';
+import 'package:jessmarwindesk/Domains/hielera.dart';
+import 'package:jessmarwindesk/Domains/hieleras.dart';
+import 'package:jessmarwindesk/Domains/pais.dart';
+import 'package:jessmarwindesk/Domains/paises.dart';
 import 'package:jessmarwindesk/Domains/pedido_detalle.dart';
 import 'package:jessmarwindesk/Domains/pedidos.dart';
 import 'package:jessmarwindesk/Domains/pedido.dart';
 import 'package:jessmarwindesk/Domains/pedidos_detalles.dart';
+import 'package:jessmarwindesk/Domains/precio.dart';
+import 'package:jessmarwindesk/Domains/precios.dart';
+import 'package:jessmarwindesk/Domains/unidadmedida.dart';
+import 'package:jessmarwindesk/Domains/unidadmedidas.dart';
+import 'package:jessmarwindesk/Domains/usocfdi.dart';
 import 'package:jessmarwindesk/Domains/usuario.dart';
 import 'package:jessmarwindesk/Domains/vendedor.dart';
 import 'package:jessmarwindesk/Domains/vendedores.dart';
@@ -66,6 +80,32 @@ class JessmarService{
         .pedido;
     //print(json);
     return pedidos;
+  }
+
+
+  Future<List<Unidadmedida>> getListaUnidadesMedida() async {
+    print("getListaUnidadMedida");
+
+    String uri = 'http://localhost:8084/JessmarServices/jessmar/getCatalogoUnidadesMedida';
+    Map<String, String> headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Accept": "application/json"
+    };
+    //Map<String, dynamic>  body = {'nohotel': nohotel};
+
+    Response response = await post(
+        uri,
+        headers: headers
+    );
+
+    String responseBody = utf8.decode(response.bodyBytes);
+
+    var json = jsonDecode(responseBody)['payload'];
+    List<Unidadmedida> unidadmedida = Unidadmedidas
+        .fromJson(json)
+        .unidadmedida;
+    //print(json);
+    return unidadmedida;
   }
 
 
@@ -161,7 +201,7 @@ class JessmarService{
 
     if( responseBody!=null && responseBody.length!=0 ){
       var json = jsonDecode(responseBody)['payload'];
-      print(json);
+      //print(json);
       detailPedido = Pedidos_detalles
           .fromJson(json).pedidosdetalle;
 
@@ -174,6 +214,39 @@ class JessmarService{
 
 
 
+
+  Future<List<Precio>> getListaPreciosByIdCliente(String id) async {
+    print("getListaPreciosByIdCliente");
+
+    List<Precio> precios;
+
+    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaPreciosByIdCliente';
+    Map<String, String> headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Accept": "application/json"
+    };
+
+    Map<String, dynamic>  body = {'id': id};
+
+    Response response = await post(
+        uri,
+        headers: headers,
+        body : body
+    );
+
+    String responseBody = utf8.decode(response.bodyBytes);
+
+    if( responseBody!=null && responseBody.length!=0 ){
+      var json = jsonDecode(responseBody)['payload'];
+      //print(json);
+      precios = Precios
+          .fromJson(json).precios;
+
+    }
+
+    return precios;
+
+  }
 
 
   Future<List<Cliente>> getListaClientes() async {
@@ -199,6 +272,32 @@ class JessmarService{
         .cliente;
     //print(json);
     return clientes;
+  }
+
+
+  Future<List<Usocfdi>> getListaUsocfdi() async {
+    print("getListaUsocfdi");
+
+    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaUsoCFDI';
+    Map<String, String> headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Accept": "application/json"
+    };
+    //Map<String, dynamic>  body = {'nohotel': nohotel};
+
+    Response response = await post(
+        uri,
+        headers: headers
+    );
+
+    String responseBody = utf8.decode(response.bodyBytes);
+
+    var json = jsonDecode(responseBody);
+    List<Usocfdi> usocfdi = Usocfdis
+        .fromJson(json)
+        .usocfdi;
+    //print(json);
+    return usocfdi;
   }
 
 
@@ -228,6 +327,115 @@ class JessmarService{
   }
 
 
+
+
+  Future<List<Hielera>> getListaHieleras() async {
+    print("getListaHieleras");
+
+    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaHieleras';
+    Map<String, String> headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Accept": "application/json"
+    };
+    //Map<String, dynamic>  body = {'nohotel': nohotel};
+
+    Response response = await post(
+        uri,
+        headers: headers
+    );
+
+    String responseBody = utf8.decode(response.bodyBytes);
+
+    var json = jsonDecode(responseBody)['payload'];
+    List<Hielera> hieleras = Hieleras
+        .fromJson(json)
+        .hielera;
+    //print(json);
+    return hieleras;
+  }
+
+
+  Future<List<Grupo>> getListaGrupos() async {
+    print("getListaGrupos");
+
+    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaGrupo';
+    Map<String, String> headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Accept": "application/json"
+    };
+    //Map<String, dynamic>  body = {'nohotel': nohotel};
+
+    Response response = await post(
+        uri,
+        headers: headers
+    );
+
+    String responseBody = utf8.decode(response.bodyBytes);
+
+    var json = jsonDecode(responseBody)['payload'];
+    List<Grupo> grupos = Grupos
+        .fromJson(json)
+        .grupos;
+    print(json);
+    return grupos;
+  }
+
+
+
+
+
+
+
+  Future<List<Pais>> getListaPaises() async {
+    print("getListaPais");
+
+    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaPaises';
+    Map<String, String> headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Accept": "application/json"
+    };
+    //Map<String, dynamic>  body = {'nohotel': nohotel};
+
+    Response response = await post(
+        uri,
+        headers: headers
+    );
+
+    String responseBody = utf8.decode(response.bodyBytes);
+
+    var json = jsonDecode(responseBody)['payload'];
+    List<Pais> paises = Paises
+        .fromJson(json)
+        .pais;
+    //print(json);
+    return paises;
+  }
+
+
+  Future<List<Estado>> getListaEstados() async {
+    print("getListaEstados");
+
+    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaEstadosFull';
+    Map<String, String> headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Accept": "application/json"
+    };
+    //Map<String, dynamic>  body = {'nohotel': nohotel};
+
+    Response response = await post(
+        uri,
+        headers: headers
+    );
+
+    String responseBody = utf8.decode(response.bodyBytes);
+
+    var json = jsonDecode(responseBody)['payload'];
+    List<Estado> estados = Estados
+        .fromJson(json)
+        .estado;
+    //print(json);
+    return estados;
+  }
 
 
 
@@ -415,6 +623,49 @@ class JessmarService{
 
   }
 
+
+  Future<Unidadmedida> getOneUnidadMedida( String id ) async {
+    print("getOneUnidadMedida");
+    Unidadmedida unidadmedida = new Unidadmedida();
+
+    try {
+
+      String uri = 'http://localhost:8084/JessmarServices/jessmar/getUnidadMedidaById';
+      Map<String, String> headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "application/json"
+      };
+      Map<String, dynamic>  body = {'id': id};
+
+      Response response = await post(
+          uri,
+          headers: headers,
+          body: body
+      );
+
+      String responseBody = utf8.decode(response.bodyBytes);
+      //print(responseBody);
+
+      if( responseBody!=null && responseBody.length!=0 ){
+        var json = jsonDecode(responseBody)['payload'];
+        unidadmedida = Unidadmedida.fromJson(json);
+        //print(json);
+      }
+
+    } catch (e) {    // <-- removing the on Exception clause
+      print(e);
+    }
+
+    return unidadmedida;
+
+  }
+
+
+
+
+
+
+
   void salvaOnePedido( Pedido pedido ) async {
     print("salvaOnePedido");
 
@@ -452,6 +703,201 @@ class JessmarService{
 //    return vendedor;
 
   }
+
+
+  void salvaOneArticulos( Articulo articulo ) async {
+    print("salvaOneArticulo");
+
+    String json = jsonEncode(articulo.toJson());
+    print("Salva json:"+json);
+
+    try {
+
+      String uri = 'http://localhost:8084/JessmarServices/jessmar/insertaArticulo';
+      Map<String, String> headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "application/json"
+      };
+      Map<String, dynamic>  body = {'json': json};
+
+      Response response = await post(
+          uri,
+          headers: headers,
+          body: body
+      );
+
+      String responseBody = utf8.decode(response.bodyBytes);
+      //print(responseBody);
+
+//      if( responseBody!=null && responseBody.length!=0 ){
+//        var json = jsonDecode(responseBody);
+//        vendedor = Vendedor.fromJson(json);
+//        //print(json);
+//      }
+
+    } catch (e) {    // <-- removing the on Exception clause
+      print(e);
+    }
+
+//    return vendedor;
+
+  }
+
+
+  void salvaOneClientes( Cliente cliente ) async {
+    print("salvaOneCliente");
+
+    String json = jsonEncode(cliente.toJson());
+    print("Salva json:"+json);
+
+    try {
+
+      String uri = 'http://localhost:8084/JessmarServices/jessmar/insertaCliente';
+      Map<String, String> headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "application/json"
+      };
+      Map<String, dynamic>  body = {'json': json};
+
+      Response response = await post(
+          uri,
+          headers: headers,
+          body: body
+      );
+
+      String responseBody = utf8.decode(response.bodyBytes);
+      //print(responseBody);
+
+//      if( responseBody!=null && responseBody.length!=0 ){
+//        var json = jsonDecode(responseBody);
+//        vendedor = Vendedor.fromJson(json);
+//        //print(json);
+//      }
+
+    } catch (e) {    // <-- removing the on Exception clause
+      print(e);
+    }
+
+//    return vendedor;
+
+  }
+
+
+  void salvaOneVendedor( Vendedor vendedor ) async {
+    print("salvaOneVendedor");
+
+    String json = jsonEncode(vendedor.toJson());
+    print("Salva json:"+json);
+
+    try {
+
+      String uri = 'http://localhost:8084/JessmarServices/jessmar/insertaVendedor';
+      Map<String, String> headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "application/json"
+      };
+      Map<String, dynamic>  body = {'json': json};
+
+      Response response = await post(
+          uri,
+          headers: headers,
+          body: body
+      );
+
+      String responseBody = utf8.decode(response.bodyBytes);
+      //print(responseBody);
+
+//      if( responseBody!=null && responseBody.length!=0 ){
+//        var json = jsonDecode(responseBody);
+//        vendedor = Vendedor.fromJson(json);
+//        //print(json);
+//      }
+
+    } catch (e) {    // <-- removing the on Exception clause
+      print(e);
+    }
+
+//    return vendedor;
+
+  }
+
+  void salvaOneHielera( Hielera hielera ) async {
+    print("salvaOneHielera");
+
+    String json = jsonEncode(hielera.toJson());
+    print("Salva json:"+json);
+
+    try {
+
+      String uri = 'http://localhost:8084/JessmarServices/jessmar/insertaHielera';
+      Map<String, String> headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "application/json"
+      };
+      Map<String, dynamic>  body = {'json': json};
+
+      Response response = await post(
+          uri,
+          headers: headers,
+          body: body
+      );
+
+      String responseBody = utf8.decode(response.bodyBytes);
+      //print(responseBody);
+
+//      if( responseBody!=null && responseBody.length!=0 ){
+//        var json = jsonDecode(responseBody);
+//        vendedor = Vendedor.fromJson(json);
+//        //print(json);
+//      }
+
+    } catch (e) {    // <-- removing the on Exception clause
+      print(e);
+    }
+
+//    return vendedor;
+
+  }
+
+
+  void salvaPreciosArticuloCliente( Precio precio ) async {
+    print("salvaPreciosArticuloCliente");
+
+    String json = jsonEncode(precio.toJson());
+    print("Salva json:"+json);
+
+    try {
+
+            String uri = 'http://localhost:8084/JessmarServices/jessmar/insertaPrecioArticuloCliente';
+            Map<String, String> headers = {
+              "Content-Type": "application/x-www-form-urlencoded",
+              "Accept": "application/json"
+            };
+            Map<String, dynamic>  body = {'json': json};
+
+            Response response = await post(
+                uri,
+                headers: headers,
+                body: body
+            );
+
+            String responseBody = utf8.decode(response.bodyBytes);
+            //print(responseBody);
+
+      //      if( responseBody!=null && responseBody.length!=0 ){
+      //        var json = jsonDecode(responseBody);
+      //        vendedor = Vendedor.fromJson(json);
+      //        //print(json);
+      //      }
+
+    } catch (e) {    // <-- removing the on Exception clause
+      print(e);
+    }
+
+    //    return vendedor;
+
+  }
+
 
 
 

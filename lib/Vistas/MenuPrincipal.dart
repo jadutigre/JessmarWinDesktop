@@ -5,6 +5,8 @@ import 'package:jessmarwindesk/Vistas/ListaArticulos.dart';
 import 'package:jessmarwindesk/Vistas/ListaPedidos.dart';
 
 import 'ListaClientes.dart';
+import 'ListaHieleras.dart';
+import 'ListaVendedores.dart';
 import 'PedidosIntro.dart';
 
 class MenuPrincipal extends StatefulWidget {
@@ -28,7 +30,7 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
             width: MediaQuery.of(context).size.width / 1.50,
             padding: EdgeInsets.all(16.0),
             child: GridView.count(
-              crossAxisCount: 3,
+              crossAxisCount: 4,
               crossAxisSpacing: 22.0,
               mainAxisSpacing: 8.0,
               children: <Widget>[
@@ -67,12 +69,14 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
                   },
                 ),
                 RaisedButton(
-                  child: Image.asset("images/informes.jpg"),
+                  child: Image.asset("images/productos.jpg"),
                   color: Theme.of(context).backgroundColor,
                   elevation: 0.0,
                   splashColor: Colors.blueGrey,
                   onPressed: actionButtonArticulos,
                 ),
+
+
                 RaisedButton(
                   child: Image.asset("images/clientes.png"),
                   color: Theme.of(context).backgroundColor,
@@ -80,6 +84,27 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
                   splashColor: Colors.blueGrey,
                   onPressed: actionButtonClientes,
                 ),
+
+                RaisedButton(
+                  child:  Image.asset("images/vendedores.png"),
+                  color: Theme.of(context).backgroundColor,
+                  elevation: 0.0,
+                  splashColor: Colors.blueGrey,
+                  onPressed: actionButtonVendedores,
+                ),
+
+
+                RaisedButton(
+                  child: Image.asset("images/hielera.jpg"),
+                  color: Theme.of(context).backgroundColor,
+                  elevation: 0.0,
+                  splashColor: Colors.blueGrey,
+                  onPressed: actionButtonHieleras,
+                ),
+
+
+
+
                   ],
             ),
           ),
@@ -102,26 +127,62 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
 
     Future<void> actionButtonArticulos() async {
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ListaArticulos(),
-        ),
+//      Navigator.push(
+//        context,
+//        MaterialPageRoute(
+//          builder: (context) => ListaArticulos(),
+//        ),
+//      );
+
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (BuildContext context) =>  ListaArticulos()),
+              (Route<dynamic> route) => false
       );
+
+
   }
 
   Future<void> actionButtonClientes() async {
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ListaClientes(),
-      ),
+//    Navigator.push(
+////      context,
+////      MaterialPageRoute(
+////        builder: (context) => ListaClientes(),
+////      ),
+////    );
+
+
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (BuildContext context) =>  ListaClientes()),
+            (Route<dynamic> route) => false
     );
+
   }
 
+  Future<void> actionButtonVendedores() async {
 
 
 
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (BuildContext context) =>  ListaVendedores()),
+            (Route<dynamic> route) => false
+    );
+
+  }
+
+  Future<void> actionButtonHieleras() async {
+
+
+
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (BuildContext context) =>  ListaHieleras()),
+            (Route<dynamic> route) => false
+    );
+
+  }
 
 }

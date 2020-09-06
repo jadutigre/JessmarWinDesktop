@@ -2,30 +2,31 @@
 
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:jessmarwindesk/Domains/articulo.dart';
 import 'package:jessmarwindesk/Domains/cliente.dart';
 import 'package:jessmarwindesk/Domains/pedido.dart';
 import 'package:jessmarwindesk/Domains/pedido_detalle.dart';
+import 'package:jessmarwindesk/Domains/vendedor.dart';
 import 'package:jessmarwindesk/Service/jessmarService.dart';
 import 'package:jessmarwindesk/Vistas/FormClientes.dart';
+import 'package:jessmarwindesk/Vistas/FormVendedores.dart';
 import 'package:jessmarwindesk/Vistas/PedidosManto.dart';
 
 import 'MenuPrincipal.dart';
 
-class ListaClientes extends StatefulWidget {
-  ListaClientes({Key key}) : super(key: key);
-  _ListaClientesState createState() => _ListaClientesState();
+class ListaVendedores extends StatefulWidget {
+  ListaVendedores({Key key}) : super(key: key);
+  _ListaVendedoresState createState() => _ListaVendedoresState();
 }
 
 
 
-class _ListaClientesState extends State<ListaClientes> {
+class _ListaVendedoresState extends State<ListaVendedores> {
 
 
 
-  Future<List<Cliente>> fclientes ;
-  List<Cliente> clientes ;
+  Future<List<Vendedor>> fvendedores ;
+  List<Vendedor> vendedores ;
 
 
 
@@ -41,7 +42,7 @@ class _ListaClientesState extends State<ListaClientes> {
       print("Estoy Pasando Servicio Async ...");
       JessmarService service = JessmarService();
       setState(() {
-          fclientes = service.getListaClientes();
+          fvendedores = service.getListaVendedores();
       });
   }
 
@@ -51,7 +52,7 @@ class _ListaClientesState extends State<ListaClientes> {
   Widget build(BuildContext context) {
 
     var futureBuilder = new FutureBuilder(
-        future: fclientes,
+        future: fvendedores,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
@@ -71,7 +72,7 @@ class _ListaClientesState extends State<ListaClientes> {
                       child: new TextField(
                         //        controller: _searchview,
                         decoration: InputDecoration(
-                          hintText: "Lista de Clientes"
+                          hintText: "Lista de Vendedores"
 //                          hintStyle: new TextStyle(color: Colors.grey[300]),
                         ),
                         textAlign: TextAlign.center,
@@ -145,12 +146,9 @@ class _ListaClientesState extends State<ListaClientes> {
                 onPressed: () {
 
                   // TODO add your logic here to add stuff
-                  Cliente cliente = Cliente();
-                  cliente.id=0;
-                  cliente.pais_id=1;
-                  cliente.estado_id=3;
-                  cliente.usocfdi_id=22;
-                  Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context) => FormClientes(cliente: cliente)),
+                  Vendedor vendedor = Vendedor();
+                  vendedor.id=0;
+                  Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context) => FormVendedores(vendedor: vendedor)),
                           (Route<dynamic> route) => false);
 
 
@@ -201,7 +199,7 @@ class _ListaClientesState extends State<ListaClientes> {
 
   Widget createDataTable(BuildContext context, AsyncSnapshot snapshot) {
 
-    List<Cliente> values = snapshot.data;
+    List<Vendedor> values = snapshot.data;
 
     return   DataTable(
       onSelectAll: (b) {},
@@ -214,17 +212,8 @@ class _ListaClientesState extends State<ListaClientes> {
           label: Text('Nombre'),
         ),
         DataColumn(
-          label: Text('RFC'),
-        ),
-        DataColumn(
-          label: Text('Telefono'),
-        ),
-        DataColumn(
-          label: Text('Email'),
-        ),
-//        DataColumn(
-//          label: Text('Area Entrega'),
-//        ),
+          label: Text('Clave'),
+        )
       ],
       rows: values
           .map(
@@ -235,7 +224,7 @@ class _ListaClientesState extends State<ListaClientes> {
               showEditIcon: true,
               placeholder: false,
               onTap:() {
-              Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context) => FormClientes(cliente: itemRow)),
+              Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context) => FormVendedores(vendedor: itemRow)),
                       (Route<dynamic> route) => false);
             },
             ),
@@ -246,47 +235,11 @@ class _ListaClientesState extends State<ListaClientes> {
               //onTap: actionButtonRaised,
             ),
             DataCell(
-              Text(itemRow.rfc.toString()),
+              Text(itemRow.clave),
               showEditIcon: false,
               placeholder: false,
               //onTap: actionButtonRaised,
-            ),
-            DataCell(
-              Text(itemRow.telefono.toString()),
-              showEditIcon: false,
-              placeholder: false,
-              //onTap: actionButtonRaised,
-            ),
-            DataCell(
-              Text(itemRow.email.toString()),
-              showEditIcon: false,
-              placeholder: false,
-              //onTap: actionButtonRaised,
-            ),
-//            DataCell(
-//              Text(itemRow.vendedornombre.toString()),
-//              showEditIcon: false,
-//              placeholder: false,
-//              //onTap: actionButtonRaised,
-//            ),
-//            DataCell(
-//              Text(itemRow.tipopedido_id.toString()),
-//              showEditIcon: false,
-//              placeholder: false,
-//              //onTap: actionButtonRaised,
-//            ),
-//            DataCell(
-//              Text(itemRow.tipopedidodescripcion.toString()),
-//              showEditIcon: false,
-//              placeholder: false,
-//              //onTap: actionButtonRaised,
-//            ),
-//            DataCell(
-//              Text(itemRow.areaentrega.toString()),
-//              showEditIcon: false,
-//              placeholder: false,
-//              //onTap: actionButtonRaised,
-//            ),
+            )
           ],
         ),
       )
@@ -295,65 +248,6 @@ class _ListaClientesState extends State<ListaClientes> {
 
 
   }
-
-
-
-
-//  Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
-//
-//    List<Pedido> values = snapshot.data;
-//
-//    return new ListView.builder(
-//      itemCount: values.length,
-//      itemBuilder: (BuildContext context, int index) {
-//        return new Column(
-//          children: <Widget>[
-//
-//            new ListTile(
-//              title: new Text(
-//                      values[index].id.toString()+" "+
-//            //values[index].fechapedido+" "+
-//            formatDate(DateTime.parse(values[index].fechapedido), [dd, '/', mm, '/', yyyy, ' ', hh, ':', nn, ':', ss, ' ', am])+" "+
-//                          values[index].clientes_id.toString()+" "+
-//                          values[index].vendedor_id.toString()+" "+
-//                          values[index].usuario
-//
-//              ),
-////              subtitle: new Text(
-////                       "F.Llegada: "+
-////                      " F.Salida: "+
-////                      " Agencia: "+
-////                      " Procedencia: "+
-////                      " Paquete: "
-////              ),
-////              isThreeLine: true,
-//              onTap: (){
-//                //print("Valor "+values[index].nombre);
-//                // String url = 'http://10.194.18.59:8081/GroupSunsetPMSProxyServices/pms/dameReservacion';
-//                // Future<Huespedes>makeRequest()async {
-//                //   Map datos = {"pnohotel":"9","idreserva":"87196"};
-//                //   var response = await http.post(url,
-//                //   headers: {"Content-type":"application/x-www-form-urlencoded"},
-//                //   body: datos);
-//                //   print(response.body);
-//                //   if (response.statusCode == 200){
-//                //   _huesped = Huespedes.fromJson(json.decode(response.body));
-//                //   return (Huespedes.fromJson(json.decode(response.body)));
-//                //   }
-//                //   else {
-//                //   throw Exception('Failed to load post');
-//                //   }
-//                // }
-//                //Navigator.push(context, new MaterialPageRoute(builder: (context) => DetailPage(values[index])));
-//                Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosManto( pedido: values[index])));
-//              },
-//            ),
-//            new Divider(height: 2.0,),
-//          ],
-//        );
-//      },
-//    );
-//  }
 
 
 }

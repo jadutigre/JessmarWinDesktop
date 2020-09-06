@@ -16,4 +16,17 @@ class Vendedor{
             );
       }
 
+
+      Map toJson() {
+
+            return {
+                  'id': id,
+                  'activo' : activo,
+                  'clave' : clave,
+                  'nombre' : nombre
+            };
+      }
+
+
+
 }

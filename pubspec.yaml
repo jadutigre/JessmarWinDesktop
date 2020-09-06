@@ -91,10 +91,13 @@ flutter:
     - images/logo_DGX-white.png
     - images/pedidos.jpg
     - images/clientes.png
+    - images/vendedores.png
+    - images/productos.jpg
     - images/notadeventa.jpg
     - images/notaventa.png
     - images/factura.jpg
     - images/informes.jpg
+    - images/hielera.jpg
     - images/inventarios.jpg
 #    - FontManifest.json
 #    - AssetManifest.json
