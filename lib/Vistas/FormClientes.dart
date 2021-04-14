@@ -34,7 +34,9 @@ class _FormClientesState extends State<FormClientes> {
 
   final TextEditingController _codigoController = new TextEditingController();
   final TextEditingController _nombreController = new TextEditingController();
+  final TextEditingController _razonsocialController = new TextEditingController();
   final TextEditingController _direccionController =  new TextEditingController();
+  final TextEditingController _nointController =  new TextEditingController();
   final TextEditingController _noextController =  new TextEditingController();
   final TextEditingController _coloniaController = new TextEditingController();
   final TextEditingController _ciudadController = new TextEditingController();
@@ -116,7 +118,9 @@ class _FormClientesState extends State<FormClientes> {
 
     _codigoController.text = cliente.id.toString();
     _nombreController.text = cliente.nombre;
+    _razonsocialController.text = cliente.razonsocial;
     _direccionController.text = cliente.direccion;
+    _nointController.text = cliente.noint;
     _noextController.text = cliente.noext;
     _coloniaController.text = cliente.colonia;
     _codigopostController.text = cliente.codigopost;
@@ -264,14 +268,28 @@ class _FormClientesState extends State<FormClientes> {
                                   Padding(
                                     padding: const EdgeInsets.all(5.0),
                                     child: TextFormField(
-                                      controller: _nombreController,
+                                      controller: _razonsocialController,
                                       obscureText: false,
                                       decoration: InputDecoration(
 //                                    prefixIcon: Icon(Icons.lock),
-                                        labelText: "Nombre del Cliente",
+                                        labelText: "Razon Social del Cliente",
                                       ),
                                     ),
                                   ),
+
+
+                                Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: TextFormField(
+                                    controller: _nombreController,
+                                    obscureText: false,
+                                    decoration: InputDecoration(
+//                                    prefixIcon: Icon(Icons.lock),
+                                      labelText: "Nombre del Cliente",
+                                    ),
+                                  ),
+                                ),
+
 
 
 
@@ -286,6 +304,20 @@ class _FormClientesState extends State<FormClientes> {
                                     ),
                                   ),
                                 ),
+
+
+                                Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: TextFormField(
+                                    controller: _nointController,
+                                    obscureText: false,
+                                    decoration: InputDecoration(
+//                                    prefixIcon: Icon(Icons.lock),
+                                      labelText: "No. Int. del Cliente",
+                                    ),
+                                  ),
+                                ),
+
 
 
                                 Padding(
@@ -328,30 +360,8 @@ class _FormClientesState extends State<FormClientes> {
                                 ),
 
 
-                                Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: TextFormField(
-                                    controller: _municipioController,
-                                    obscureText: false,
-                                    decoration: InputDecoration(
-//                                    prefixIcon: Icon(Icons.lock),
-                                      labelText: "Municipio del Cliente",
-                                    ),
-                                  ),
-                                ),
 
 
-                                Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: TextFormField(
-                                    controller: _codigopostController,
-                                    obscureText: false,
-                                    decoration: InputDecoration(
-//                                    prefixIcon: Icon(Icons.lock),
-                                      labelText: "Codigo Postal del Cliente",
-                                    ),
-                                  ),
-                                ),
 
 
 
@@ -373,6 +383,33 @@ class _FormClientesState extends State<FormClientes> {
                               Column(
                                 //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: <Widget>[
+
+
+                                    Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: TextFormField(
+                                        controller: _municipioController,
+                                        obscureText: false,
+                                        decoration: InputDecoration(
+//                                    prefixIcon: Icon(Icons.lock),
+                                          labelText: "Municipio del Cliente",
+                                        ),
+                                      ),
+                                    ),
+
+
+                                    Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: TextFormField(
+                                        controller: _codigopostController,
+                                        obscureText: false,
+                                        decoration: InputDecoration(
+//                                    prefixIcon: Icon(Icons.lock),
+                                          labelText: "Codigo Postal del Cliente",
+                                        ),
+                                      ),
+                                    ),
+
 
 
 
@@ -797,10 +834,13 @@ class _FormClientesState extends State<FormClientes> {
 
 
   saveRecord() async {
+
       Cliente cliente = new Cliente();
       cliente.id = int.parse( _codigoController.text);
+      cliente.razonsocial= _razonsocialController.text;
       cliente.nombre= _nombreController.text;
       cliente.direccion = _direccionController.text;
+      cliente.noint = _nointController.text;
       cliente.noext = _noextController.text;
       cliente.colonia = _coloniaController.text;
       cliente.ciudad = _ciudadController.text;

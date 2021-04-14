@@ -133,9 +133,13 @@ class _ListaArticulosState extends State<ListaArticulos> {
                 },
                 heroTag: null,
               ),
+
+
               SizedBox(
                 height: 10,
               ),
+
+
               FloatingActionButton(
                 child: Icon(
                     Icons.add
@@ -145,8 +149,11 @@ class _ListaArticulosState extends State<ListaArticulos> {
                       // TODO add your logic here to add stuff
                   Articulo articulo = Articulo();
                   articulo.id=0;
+
+
+
                   Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context) => FormArticulos(articu: articulo)),
-                          (Route<dynamic> route) => false);
+                          (Route<dynamic> route) => true);
 
 
                     },

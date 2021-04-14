@@ -1,18 +1,34 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:jessmarwindesk/Domains/Articulos.dart';
 import 'package:jessmarwindesk/Domains/articulo.dart';
 import 'package:jessmarwindesk/Domains/cliente.dart';
+import 'package:jessmarwindesk/Domains/hielera.dart';
+import 'package:jessmarwindesk/Domains/hieleras.dart';
 import 'package:jessmarwindesk/Domains/pedido.dart';
 import 'package:jessmarwindesk/Domains/pedido_detalle.dart';
 import 'package:jessmarwindesk/Domains/pedidos.dart';
+import 'package:jessmarwindesk/Domains/pedidos_detalles.dart';
+import 'package:jessmarwindesk/Domains/precio.dart';
+import 'package:jessmarwindesk/Domains/precios.dart';
 import 'package:jessmarwindesk/Domains/vendedor.dart';
 import 'package:jessmarwindesk/Service/jessmarService.dart';
+import 'package:jessmarwindesk/Tools/PdfPrevio.dart';
 import 'package:jessmarwindesk/Vistas/PedidosIntro.dart';
 import 'package:color_panel/color_panel.dart';
+import 'package:jessmarwindesk/Vistas/Testautocomplete.dart';
+import 'package:pdf/pdf.dart';
 import 'dart:io' show Platform;
+import 'package:pdf/widgets.dart' as pw;
+
 
 import 'package:nice_button/NiceButton.dart';
+import 'package:printing/printing.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simple_autocomplete_formfield/simple_autocomplete_formfield.dart';
 
 import 'ListaPedidos.dart';
 
@@ -26,28 +42,70 @@ class PedidosManto extends StatefulWidget {
 
 class _PedidosMantoState extends State<PedidosManto> {
 
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  bool _isVisible = false;
+
+  bool _isVisibleClosePedido = false;
+
+  void showToast() {
+    setState(() {
+      _isVisible = true;
+    });
+  }
+
+  void hideToast() {
+    setState(() {
+      _isVisible = false;
+    });
+  }
+
+
+  void showClosePedido() {
+    setState(() {
+      _isVisibleClosePedido = true;
+    });
+  }
+
+  void hideClosePedido() {
+    setState(() {
+      _isVisibleClosePedido = false;
+    });
+  }
+
+
+  void setPrice(Precio value) {
+    setState(() {
+      this._currentprecio = value;
+      _cantidadController.text = '1';
+      _precioController.text = this._currentprecio.precio.toString();
+    });
+  }
+
   JessmarService service = JessmarService();
 
   final TextEditingController _numberpedidoController = new TextEditingController();
   final TextEditingController _areaEntregaController = new TextEditingController();
 
   /*Controller de Detalle*/
-  final TextEditingController _idDetalleController =  new TextEditingController();
-  final TextEditingController _articuloController =  new TextEditingController();
+  final TextEditingController _idDetalleController = new TextEditingController();
+  final TextEditingController _articuloController = new TextEditingController();
   final TextEditingController _cantidadController = new TextEditingController();
   final TextEditingController _precioController = new TextEditingController();
 
   final TextEditingController dateCtl = TextEditingController();
 
-  var firstColor = Color(0xff5b86e5), secondColor = Color(0xff36d1dc);
+  var firstColor = Color(0xff5b86e5),
+      secondColor = Color(0xff36d1dc);
 
-  DateTime date ;
+  DateTime date;
 
   Future<Pedido> fpedido;
   Future<List<Pedido>> fpedidos;
   Future<List<Cliente>> fclientes;
   Future<List<Vendedor>> fvendedores;
   Future<List<Articulo>> farticulos;
+  Future<List<Hielera>> fhieleras;
 
   Pedido onepedido;
   List<Pedido> lpedidos;
@@ -55,11 +113,16 @@ class _PedidosMantoState extends State<PedidosManto> {
   List<Cliente> lclientes;
   List<Vendedor> lvendedores;
   List<Articulo> larticulos;
+  List<Hielera> lhieleras;
+
+  Future<List<Precio>> fprecios;
+  List<Precio> lprecios;
 
   List<DropdownMenuItem<Cliente>> _dropdownMenuItems;
 
   String valor = "";
   Item selectedUser;
+  double eltotal;
 
 //  List<Item> users = <Item>[
 //    const Item('Android',Icon(Icons.android,color:  const Color(0xFF167F67),)),
@@ -68,19 +131,22 @@ class _PedidosMantoState extends State<PedidosManto> {
 //    const Item('iOS',Icon(Icons.mobile_screen_share,color:  const Color(0xFF167F67),)),
 //  ];
 
-  Pedido    _currentpedido;
-  Cliente  _currentcliente;
+  Pedido _currentpedido;
+  Cliente _currentcliente;
   Vendedor _currentvendedor;
-  Articulo _currentarticulo;
+  Hielera _currenthielera;
 
-  Future<Map<String,dynamic>> datos;
+  //Articulo _currentarticulo;
+  Precio _currentprecio;
+
+  Future<Map<String, dynamic>> datos;
 
   String _selectedDate = 'Tap to select date';
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime d = await showDatePicker(
       context: context,
-      locale : const Locale("fr","FR"),
+      locale: const Locale("fr", "FR"),
       initialDate: DateTime.parse(onepedido.fechapedido),
       firstDate: DateTime(2015),
       lastDate: DateTime(2030),
@@ -99,62 +165,82 @@ class _PedidosMantoState extends State<PedidosManto> {
   }
 
 
-
-  Future<Map<String,dynamic>> _getData() async {
-
+  Future<Map<String, dynamic>> _getData() async {
     Pedido pedido = widget.pedido;
     print("Servicio  _getData");
 
-     if(pedido.id == 0 ){
-       onepedido = pedido;
-     }else{
-       onepedido   = await service.getOnePedido(pedido.id.toString());
-     }
+    if (pedido.id == 0) {
+        onepedido = pedido;
+    } else {
+        onepedido = await service.getOnePedido(pedido.id.toString());
+        var values = onepedido.pedidosdetalle;
+        var itvalues = values.iterator;
+        eltotal = 0.0;
+        while(itvalues.moveNext()){
+          Pedido_detalle eldetalle =  itvalues.current;
+          eltotal = eltotal + eldetalle.total;
+        }
+    }
 
-    _numberpedidoController.value = _numberpedidoController.value.copyWith(text:onepedido.id.toString(),);
+    _numberpedidoController.value =
+        _numberpedidoController.value.copyWith(text: onepedido.id.toString(),);
     _areaEntregaController.text = onepedido.areaentrega;
-
-
-
 
 
     _selectedDate = onepedido.fechapedido;
     dateCtl.text = onepedido.fechapedido;
 
-    lpedidos    = await service.getListaPedidos();
+    //lpedidos = await service.getListaPedidos();
 
-    fclientes   = service.getListaClientes();
-    lclientes   = await fclientes;
+    fclientes = service.getListaClientes();
+    lclientes = await fclientes;
     var it0 = lclientes.iterator;
-    Cliente vcliente ;
+    Cliente vcliente;
     while (it0.moveNext()) {
       vcliente = it0.current;
-      if(vcliente.id==onepedido.clientes_id){
-            _currentcliente=vcliente;
-            break;
+      if (vcliente.id == onepedido.clientes_id) {
+        _currentcliente = vcliente;
+        break;
       }
     }
 
     fvendedores = service.getListaVendedores();
     lvendedores = await fvendedores;
     var it1 = lvendedores.iterator;
-    Vendedor vvendedor ;
+    Vendedor vvendedor;
     while (it1.moveNext()) {
       vvendedor = it1.current;
-      if(vvendedor.id==onepedido.vendedor_id){
-        _currentvendedor=vvendedor;
+      if (vvendedor.id == onepedido.vendedor_id) {
+        _currentvendedor = vvendedor;
         break;
       }
     }
 
-    farticulos = service.getListaArticulosFull();
-    larticulos = await farticulos;
-    _currentarticulo = larticulos[0];
+
+    fhieleras = service.getListaHieleras();
+    lhieleras = await fhieleras;
+    var it2 = lhieleras.iterator;
+    Hielera vhielera;
+    while (it2.moveNext()) {
+      vhielera = it2.current;
+      // if(vhielera.id==onepedido.hielera_id){
+      //   _currenthielera=vhielera;
+      //   break;
+      // }
+    }
 
 
-    Map<String,dynamic> datos = new Map();
+    fprecios =
+        service.getListaPreciosByIdCliente(this._currentcliente.id.toString());
+    lprecios = await fprecios;
+    _currentprecio = lprecios[0];
+    _cantidadController.text = "1";
+    _precioController.text = _currentprecio.precio.toString();
 
-    datos["onepedido"]= onepedido;
+
+    Map<String, dynamic> datos = new Map();
+
+    datos["onepedido"] = onepedido;
 
     datos["lpedidos"] = lpedidos;
     datos["fclientes"] = fclientes;
@@ -162,7 +248,6 @@ class _PedidosMantoState extends State<PedidosManto> {
     datos["fvendedores"] = fvendedores;
 
     return datos;
-
   }
 
   Future<DateTime> getDate() {
@@ -171,7 +256,7 @@ class _PedidosMantoState extends State<PedidosManto> {
     return showDatePicker(
       context: context,
       //initialDate: DateTime.now(),
-      initialDate:DateTime.parse(onepedido.fechapedido),
+      initialDate: DateTime.parse(onepedido.fechapedido),
       firstDate: DateTime(2018),
       lastDate: DateTime(2030),
       builder: (BuildContext context, Widget child) {
@@ -186,7 +271,6 @@ class _PedidosMantoState extends State<PedidosManto> {
 
   @override
   Widget build(BuildContext context) {
-
     var futureBuilder = new FutureBuilder(
         future: datos,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -213,7 +297,6 @@ class _PedidosMantoState extends State<PedidosManto> {
                           children: <Widget>[
 
 
-
                             new Flexible(
                               child: Padding(
                                 padding: const EdgeInsets.all(5.0),
@@ -235,8 +318,10 @@ class _PedidosMantoState extends State<PedidosManto> {
                                 padding: const EdgeInsets.all(5.0),
                                 child: new FutureBuilder(
                                     future: fclientes,
-                                    builder: (BuildContext context,AsyncSnapshot<List<Cliente>> snapshot) {
-                                      if (!snapshot.hasData) return CircularProgressIndicator();
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<List<Cliente>> snapshot) {
+                                      if (!snapshot.hasData)
+                                        return CircularProgressIndicator();
                                       return DropdownButtonFormField<Cliente>(
                                         decoration: InputDecoration(
 //                                    prefixIcon: Icon(Icons.lock),
@@ -247,21 +332,33 @@ class _PedidosMantoState extends State<PedidosManto> {
                                         icon: Icon(Icons.check_circle_outline),
                                         hint: Text("Choose"),
                                         items: snapshot.data
-                                            .map((items) => DropdownMenuItem<Cliente>(
-                                          child: Text(items.nombre),
-                                          value: items,
-                                        ))
+                                            .map((items) =>
+                                            DropdownMenuItem<Cliente>(
+                                              child: Text(items.nombre),
+                                              value: items,
+                                            ))
                                             .toList(),
-                                        onChanged: (Cliente newValue) {
+                                        onChanged: (Cliente newValue) async {
                                           setState(() =>
+                                          {
                                             this._currentcliente = newValue
+                                          }
                                           );
+                                          fprecios = service
+                                              .getListaPreciosByIdCliente(
+                                              this._currentcliente.id
+                                                  .toString());
+                                          lprecios = await fprecios;
+                                          _currentprecio = lprecios[0];
+                                          _cantidadController.text = '1';
+                                          _precioController.text =
+                                              this._currentprecio.precio
+                                                  .toString();
                                         },
                                       );
                                     }),
                               ),
                             ),
-
 
 
                             SizedBox(
@@ -288,33 +385,30 @@ class _PedidosMantoState extends State<PedidosManto> {
 //                            ),
 
 
+                            new Flexible(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: TextFormField(
+                                  controller: dateCtl,
+                                  decoration: InputDecoration(
+                                    labelText: "Fecha del Pedido",
+                                    hintText: "Ex. Insert your dob",),
+                                  onTap: () async {
+                                    date = DateTime(1900);
+                                    FocusScope.of(context).requestFocus(
+                                        new FocusNode());
 
+                                    date = await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime.now(),
+                                        firstDate: DateTime(1900),
+                                        lastDate: DateTime(2100));
 
-                          new Flexible(
-                          child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: TextFormField(
-                                controller: dateCtl,
-                                decoration: InputDecoration(
-                                  labelText: "Fecha del Pedido",
-                                  hintText: "Ex. Insert your dob",),
-                                onTap: () async{
-                                  date = DateTime(1900);
-                                  FocusScope.of(context).requestFocus(new FocusNode());
-
-                                  date = await showDatePicker(
-                                      context: context,
-                                      initialDate:DateTime.now(),
-                                      firstDate:DateTime(1900),
-                                      lastDate: DateTime(2100));
-
-                                  dateCtl.text = date.toIso8601String();},
+                                    dateCtl.text = date.toIso8601String();
+                                  },
                                 ),
-                          ),
-                          ),
-
-
-
+                              ),
+                            ),
 
 
                             SizedBox(
@@ -327,11 +421,14 @@ class _PedidosMantoState extends State<PedidosManto> {
                                 padding: const EdgeInsets.all(5.0),
                                 child: new FutureBuilder(
                                     future: fvendedores,
-                                    builder: (BuildContext context,AsyncSnapshot<List<Vendedor>> snapshot) {
-                                      if (!snapshot.hasData) return CircularProgressIndicator();
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<
+                                            List<Vendedor>> snapshot) {
+                                      if (!snapshot.hasData)
+                                        return CircularProgressIndicator();
                                       return DropdownButtonFormField<Vendedor>(
                                         decoration: InputDecoration(
-   //                                    prefixIcon: Icon(Icons.lock),
+                                          //                                    prefixIcon: Icon(Icons.lock),
                                           labelText: "Vendedor",
                                         ),
                                         isExpanded: true,
@@ -339,14 +436,15 @@ class _PedidosMantoState extends State<PedidosManto> {
                                         icon: Icon(Icons.check_circle_outline),
                                         hint: Text("Choose"),
                                         items: snapshot.data
-                                            .map((items) => DropdownMenuItem<Vendedor>(
-                                          child: Text(items.nombre),
-                                          value: items,
-                                        ))
+                                            .map((items) =>
+                                            DropdownMenuItem<Vendedor>(
+                                              child: Text(items.nombre),
+                                              value: items,
+                                            ))
                                             .toList(),
                                         onChanged: (Vendedor newValue) {
                                           setState(() =>
-                                            this._currentvendedor = newValue
+                                          this._currentvendedor = newValue
                                           );
                                         },
                                       );
@@ -355,10 +453,8 @@ class _PedidosMantoState extends State<PedidosManto> {
                             ),
 
 
-
-
                             new Flexible(
-                               child: Padding(
+                              child: Padding(
                                 padding: const EdgeInsets.all(5.0),
                                 child: TextFormField(
                                   controller: _areaEntregaController,
@@ -372,266 +468,592 @@ class _PedidosMantoState extends State<PedidosManto> {
                             ),
 
 
-                        ],
-                      ),
-
-
-                      ),
-
-
-          /* Lista de Productos */
-
-
-
-
-          Container(
-          child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-
-
-            Expanded(
-              flex: 1,
-              child: Container(
-                constraints: BoxConstraints.expand(
-                  height:  500 ,
-                ),
-                padding: const EdgeInsets.all(8.0),
-                color: Colors.white,
-                alignment: Alignment.topLeft,
-                child:
-
-                Column(
-                  children: <Widget>[
-
-                  ],
-                ),
-              ),
-            ),
-
-
-              Expanded(
-              flex: 4,
-              child: Container(
-                          constraints: BoxConstraints.expand(
-                            height:  500 ,
-                          ),
-                          padding: const EdgeInsets.all(8.0),
-                          color: Colors.white,
-                          alignment: Alignment.topLeft,
-                          child: createDataTable(context, snapshot)
-                        //                      transform: Matrix4.rotationZ(0.1),
-                      ),
-              ),
-
-
-
-
-
-
-
-            Expanded(
-              flex: 1,
-              child: Container(
-                  constraints: BoxConstraints.expand(
-                    height:  500 ,
-                  ),
-                  padding: const EdgeInsets.all(8.0),
-                  color: Colors.white,
-                  alignment: Alignment.topLeft,
-                  child:
-
-                  Column(
-                    children: <Widget>[
-
-//          Container(
-//          child: Row(
-//          mainAxisAlignment: MainAxisAlignment.start,
-//          children: <Widget>[
-//
-//            NiceButton(
-//              mini: true,
-//              icon: Icons.add,
-//              background: firstColor,
-//              onPressed: () {
-//                print("hello");
-//              },
-//            ),
-//            NiceButton(
-//              mini: true,
-//              icon: Icons.edit,
-//              background: firstColor,
-//              onPressed: () {
-//                print("hello");
-//              },
-//            ),
-//            NiceButton(
-//              mini: true,
-//              icon: Icons.delete,
-//              background: firstColor,
-//              onPressed: () {
-//                print("hello");
-//              },
-//            )
-//
-//          ]
-//          )
-//          ),
-
-
-                        NiceButton(
-
-                          width: 30.0,
-                          mini: true,
-                          icon: Icons.add,
-                          background: firstColor,
-                          onPressed: () {
-                            newRecord();
-                          },
+                          ],
                         ),
 
 
+                      ),
 
-                       Visibility(
-                          visible: false,
-                          child:TextFormField(
-                          controller: _cantidadController,
-                          obscureText: false,
-                          decoration: InputDecoration(
+
+                      /* Lista de Productos */
+
+
+                      Container(
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+
+
+                                // Expanded(
+                                //   flex: 1,
+                                //   child: Container(
+                                //     constraints: BoxConstraints.expand(
+                                //       height: 500,
+                                //       width: 50
+                                //     ),
+                                //     padding: const EdgeInsets.all(8.0),
+                                //     color: Colors.blue,
+                                //     alignment: Alignment.topLeft,
+                                //     child:
+                                //
+                                //     Column(
+                                //       children: <Widget>[
+                                //       ],
+                                //     ),
+                                //   ),
+                                // ),
+
+
+                                Expanded(
+                                  flex: 4,
+                                  child: Container(
+                                      constraints: BoxConstraints.expand(
+                                        height: 500,
+                                      ),
+                                      padding: const EdgeInsets.only(left:12.0,top:8.0,right: 12.0,bottom: 8.0),
+                                      color: Colors.white,
+                                      alignment: Alignment.topLeft,
+                                      child:
+                                      SingleChildScrollView(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: <Widget>[
+
+                                            createDataTable(context, snapshot),
+                                            Divider(
+                                              color: Colors.black,
+                                            ),
+                                            Row(
+
+                                              children: <Widget>[
+
+                                                Expanded(
+                                                    flex: 2,
+                                                    child: Column(
+                                                    children: [
+                                                      Text(
+                                                        '  ',
+                                                        textAlign: TextAlign.center,
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                                      ) ,
+                                                    ])),
+
+
+                                                Expanded(
+                                                    flex: 2,
+                                                    child: Column(
+                                                    children: [
+                                                      Text(
+                                                        '  ',
+                                                        textAlign: TextAlign.center,
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                                      ) ,
+                                                    ])),
+
+
+
+                                                Expanded(
+                                                    flex: 5,
+                                                    child: Column(
+                                                        children: [
+
+                                                            Row(
+
+                                                            mainAxisAlignment: MainAxisAlignment.start,
+
+                                                            children: <Widget>[
+                                                              Text(
+                                                                'Total : ',
+                                                                textAlign: TextAlign.center,
+                                                                overflow: TextOverflow.ellipsis,
+                                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                                              ) ,
+                                                              Text(
+                                                                eltotal.toString(),
+                                                                textAlign: TextAlign.center,
+                                                                overflow: TextOverflow.ellipsis,
+                                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                                              )
+                                                            ])
+
+                                                    ])),
+
+
+
+                                                ]
+                                            ),
+
+                                          ],
+                                    //                      transform: Matrix4.rotationZ(0.1),
+                                  )
+                                      ),
+                                 )
+                                ),
+
+
+
+                                /* Cierre de Pedido */
+
+
+                                Visibility(
+                                  visible: _isVisible,
+                                  child: Expanded(
+                                    flex: 2,
+                                    child: Container(
+                                      constraints: BoxConstraints.expand(
+                                        height: 500,
+                                      ),
+                                      padding: const EdgeInsets.all(8.0),
+                                      color: Colors.white,
+                                      alignment: Alignment.topLeft,
+                                      child:
+
+                                      Column(
+                                        children: <Widget>[
+
+                                          // NiceButton(
+                                          //
+                                          //   width: 30.0,
+                                          //   mini: true,
+                                          //   icon: Icons.add,
+                                          //   background: firstColor,
+                                          //   onPressed: () {
+                                          //     newRecord();
+                                          //   },
+                                          // ),
+
+
+                                          Visibility(
+                                            visible: false,
+                                            child: TextFormField(
+                                              controller: _cantidadController,
+                                              obscureText: false,
+                                              decoration: InputDecoration(
 //                                    prefixIcon: Icon(Icons.lock),
-                            labelText: "Teclee la cantidad",
-                          ),
-                        ),
-                       ),
+                                                labelText: "Teclee la cantidad",
+                                              ),
+                                            ),
+                                          ),
 
 
+//                       new Flexible(
+//                         child: Padding(
+//                           padding: const EdgeInsets.all(5.0),
+//                           child: new FutureBuilder(
+//                               future: fprecios,
+//                               builder: (BuildContext context,AsyncSnapshot<List<Precio>> snapshot) {
+//                                 if (!snapshot.hasData) return CircularProgressIndicator();
+//                                 return DropdownButtonFormField<Precio>(
+//                                   decoration: InputDecoration(
+// //                                    prefixIcon: Icon(Icons.lock),
+//                                     labelText: "Seleccione el Producto",
+//                                   ),
+//                                   isExpanded: true,
+//                                   value: _currentprecio,
+//                                   icon: Icon(Icons.check_circle_outline),
+//                                   hint: Text("Choose"),
+//                                   items: snapshot.data
+//                                       .map((items) => DropdownMenuItem<Precio>(
+//                                     child: Text(items.descripcion),
+//                                     value: items,
+//                                   ))
+//                                       .toList(),
+//                                   onChanged: (Precio newValue) {
+//                                       setState(() =>
+//                                         this._currentprecio = newValue
+//                                       );
+//                                       _cantidadController.text = '1';
+//                                       _precioController.text = this._currentprecio.precio.toString();
+//                                   },
+//                                 );
+//                               }),
+//                         ),
+//                       ),
 
 
-                      new Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: new FutureBuilder(
-                              future: farticulos,
-                              builder: (BuildContext context,AsyncSnapshot<List<Articulo>> snapshot) {
-                                if (!snapshot.hasData) return CircularProgressIndicator();
-                                return DropdownButtonFormField<Articulo>(
-                                  decoration: InputDecoration(
+                                          SimpleAutocompleteFormField<Precio>(
+
+                                            decoration: InputDecoration(
+                                                labelText: 'Precio',
+                                                border: OutlineInputBorder()),
+                                            suggestionsHeight: 80.0,
+                                            itemBuilder: (context, precio) =>
+                                                Padding(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment
+                                                          .start,
+                                                      children: [
+                                                        Text(precio.descripcion,
+                                                            style: TextStyle(
+                                                                fontWeight: FontWeight
+                                                                    .bold)),
+                                                        // Text(person.address)
+                                                      ]
+                                                  ),
+                                                ),
+                                            maxSuggestions: 6,
+                                            onSearch: (search) async =>
+                                                lprecios
+                                                    .where((precio) =>
+                                                    precio.descripcion
+                                                        .toLowerCase()
+                                                        .contains(
+                                                        search.toLowerCase())
+                                                  // ||
+                                                  // precio.address
+                                                  //     .toLowerCase()
+                                                  //     .contains(search.toLowerCase())
+                                                )
+                                                    .toList(),
+                                            itemFromString: (string) =>
+                                                lprecios.singleWhere(
+                                                        (precio) =>
+                                                    precio.descripcion
+                                                        .toLowerCase() ==
+                                                        string.toLowerCase(),
+                                                    orElse: () => null
+                                                ),
+                                            onChanged: (value) =>
+                                                setPrice(value),
+                                            onSaved: (value) => setPrice(value),
+                                            validator: (precio) =>
+                                            precio == null
+                                                ? 'Invalid person.'
+                                                : null,
+                                          ),
+
+
+                                          Padding(
+                                            padding: const EdgeInsets.all(5.0),
+                                            child: TextFormField(
+                                              controller: _cantidadController,
+                                              obscureText: false,
+                                              decoration: InputDecoration(
 //                                    prefixIcon: Icon(Icons.lock),
-                                    labelText: "Seleccione el Producto",
+                                                labelText: "Teclee la cantidad",
+                                              ),
+                                            ),
+                                          ),
+
+
+                                          Padding(
+                                            padding: const EdgeInsets.all(5.0),
+                                            child: TextFormField(
+                                              controller: _precioController,
+                                              obscureText: false,
+                                              decoration: InputDecoration(
+//                                    prefixIcon: Icon(Icons.lock),
+                                                labelText: "Teclee el precio",
+                                              ),
+                                            ),
+                                          ),
+
+                                          SizedBox(
+                                            height: 15.0,
+                                          ),
+
+                                          Row(
+                                              children: <Widget>[
+
+                                                NiceButton(
+                                                  fontSize: 10,
+                                                  width: 100,
+                                                  elevation: 8.0,
+                                                  radius: 45.0,
+                                                  text: "Aceptar",
+                                                  background: firstColor,
+                                                  onPressed: () {
+                                                    hideToast();
+                                                    addRecord();
+                                                  },
+                                                ),
+
+                                                NiceButton(
+                                                  fontSize: 10,
+                                                  width: 100,
+                                                  elevation: 8.0,
+                                                  radius: 45.0,
+                                                  text: "Cancelar",
+                                                  background: firstColor,
+                                                  onPressed: () {
+                                                    hideToast();
+                                                  },
+                                                ),
+
+                                              ])
+
+
+                                        ],
+                                      ),
+
+                                      //                      transform: Matrix4.rotationZ(0.1),
+                                    ),
                                   ),
-                                  isExpanded: true,
-                                  value: _currentarticulo,
-                                  icon: Icon(Icons.check_circle_outline),
-                                  hint: Text("Choose"),
-                                  items: snapshot.data
-                                      .map((items) => DropdownMenuItem<Articulo>(
-                                    child: Text(items.descripcion),
-                                    value: items,
-                                  ))
-                                      .toList(),
-                                  onChanged: (Articulo newValue) {
-                                    setState(() =>
-                                    this._currentarticulo = newValue
-                                    );
-                                  },
-                                );
-                              }),
-                        ),
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: TextFormField(
-                          controller: _cantidadController,
-                          obscureText: false,
-                          decoration: InputDecoration(
-//                                    prefixIcon: Icon(Icons.lock),
-                            labelText: "Teclee la cantidad",
-                          ),
-                        ),
-                      ),
+                                ),
 
 
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: TextFormField(
-                          controller: _precioController,
-                          obscureText: false,
-                          decoration: InputDecoration(
-//                                    prefixIcon: Icon(Icons.lock),
-                            labelText: "Teclee el precio",
-                          ),
-                        ),
-                      ),
+                                Visibility(
+                                  visible: _isVisibleClosePedido,
+                                  child: Expanded(
+                                    flex: 2,
+                                    child: Container(
+                                      constraints: BoxConstraints.expand(
+                                        height: 500,
+                                      ),
+                                      padding: const EdgeInsets.all(8.0),
+                                      color: Colors.white,
+                                      alignment: Alignment.topLeft,
+                                      child:
 
-                      SizedBox(
-                        height: 15.0,
-                      ),
-
-                      NiceButton(
-                        fontSize: 14,
-                        width: 200,
-                        elevation: 8.0,
-                        radius: 45.0,
-                        text: "Aceptar",
-                        background: firstColor,
-                        onPressed: () {
-                          addRecord();
-                        },
-                      ),
+                                      Column(
+                                        children: <Widget>[
 
 
+                                          new Flexible(
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(
+                                                  5.0),
+                                              child: new FutureBuilder(
+                                                  future: fhieleras,
+                                                  builder: (
+                                                      BuildContext context,
+                                                      AsyncSnapshot<List<
+                                                          Hielera>> snapshot) {
+                                                    if (!snapshot.hasData)
+                                                      return CircularProgressIndicator();
+                                                    return DropdownButtonFormField<
+                                                        Hielera>(
+                                                      decoration: InputDecoration(
+                                                        //                                    prefixIcon: Icon(Icons.lock),
+                                                        labelText: "Hielera",
+                                                      ),
+                                                      isExpanded: true,
+                                                      value: this
+                                                          ._currenthielera,
+                                                      icon: Icon(Icons
+                                                          .check_circle_outline),
+                                                      hint: Text("Choose"),
+                                                      items: snapshot.data
+                                                          .map((items) =>
+                                                          DropdownMenuItem<
+                                                              Hielera>(
+                                                            child: Text(items
+                                                                .descripcion),
+                                                            value: items,
+                                                          ))
+                                                          .toList(),
+                                                      onChanged: (
+                                                          Hielera newValue) {
+                                                        setState(() =>
+                                                        this._currenthielera =
+                                                            newValue
+                                                        );
+                                                      },
+                                                    );
+                                                  }),
+                                            ),
+                                          ),
 
-                    ],
-                  ),
 
-                //                      transform: Matrix4.rotationZ(0.1),
-              ),
-            ),
-
-
-
-
-
-          Expanded(
-          flex: 1,
-          child: Container(
-          constraints: BoxConstraints.expand(
-          height:  500 ,
-          ),
-          padding: const EdgeInsets.all(8.0),
-          color: Colors.white,
-          alignment: Alignment.topLeft,
-          child:
-
-          Column(
-          children: <Widget>[
-
-          ],
-          ),
-          ),
-          ),
+//                       Visibility(
+//                         visible: false,
+//                         child:TextFormField(
+//                           controller: _cantidadController,
+//                           obscureText: false,
+//                           decoration: InputDecoration(
+// //                                    prefixIcon: Icon(Icons.lock),
+//                             labelText: "Teclee la cantidad",
+//                           ),
+//                         ),
+//                       ),
 
 
+//                       new Flexible(
+//                         child: Padding(
+//                           padding: const EdgeInsets.all(5.0),
+//                           child: new FutureBuilder(
+//                               future: fprecios,
+//                               builder: (BuildContext context,AsyncSnapshot<List<Precio>> snapshot) {
+//                                 if (!snapshot.hasData) return CircularProgressIndicator();
+//                                 return DropdownButtonFormField<Precio>(
+//                                   decoration: InputDecoration(
+// //                                    prefixIcon: Icon(Icons.lock),
+//                                     labelText: "Seleccione el Producto",
+//                                   ),
+//                                   isExpanded: true,
+//                                   value: _currentprecio,
+//                                   icon: Icon(Icons.check_circle_outline),
+//                                   hint: Text("Choose"),
+//                                   items: snapshot.data
+//                                       .map((items) => DropdownMenuItem<Precio>(
+//                                     child: Text(items.descripcion),
+//                                     value: items,
+//                                   ))
+//                                       .toList(),
+//                                   onChanged: (Precio newValue) {
+//                                       setState(() =>
+//                                         this._currentprecio = newValue
+//                                       );
+//                                       _cantidadController.text = '1';
+//                                       _precioController.text = this._currentprecio.precio.toString();
+//                                   },
+//                                 );
+//                               }),
+//                         ),
+//                       ),
 
 
+                                          // SimpleAutocompleteFormField<Precio>(
+                                          //
+                                          //   decoration: InputDecoration(
+                                          //       labelText: 'Precio', border: OutlineInputBorder()),
+                                          //   suggestionsHeight: 80.0,
+                                          //   itemBuilder: (context, precio) => Padding(
+                                          //     padding: EdgeInsets.all(8.0),
+                                          //     child: Column(
+                                          //         crossAxisAlignment: CrossAxisAlignment.start,
+                                          //         children: [
+                                          //           Text(precio.descripcion,style: TextStyle(fontWeight: FontWeight.bold)),
+                                          //           // Text(person.address)
+                                          //         ]
+                                          //     ),
+                                          //   ),
+                                          //   maxSuggestions: 6,
+                                          //   onSearch: (search) async => lprecios
+                                          //       .where((precio) =>
+                                          //       precio.descripcion
+                                          //           .toLowerCase()
+                                          //           .contains(search.toLowerCase())
+                                          //     // ||
+                                          //     // precio.address
+                                          //     //     .toLowerCase()
+                                          //     //     .contains(search.toLowerCase())
+                                          //   )
+                                          //       .toList(),
+                                          //   itemFromString: (string) => lprecios.singleWhere(
+                                          //           (precio) => precio.descripcion.toLowerCase() == string.toLowerCase(),
+                                          //       orElse: () => null
+                                          //   ),
+                                          //   onChanged: (value) => setPrice(value),
+                                          //   onSaved: (value) => setPrice(value),
+                                          //   validator: (precio) => precio == null ? 'Invalid person.' : null,
+                                          // ),
 
-            ]
-           )
-          )
+
+//                       Padding(
+//                         padding: const EdgeInsets.all(5.0),
+//                         child: TextFormField(
+//                           controller: _cantidadController,
+//                           obscureText: false,
+//                           decoration: InputDecoration(
+// //                                    prefixIcon: Icon(Icons.lock),
+//                             labelText: "Teclee la cantidad",
+//                           ),
+//                         ),
+//                       ),
 
 
+//                       Padding(
+//                         padding: const EdgeInsets.all(5.0),
+//                         child: TextFormField(
+//                           controller: _precioController,
+//                           obscureText: false,
+//                           decoration: InputDecoration(
+// //                                    prefixIcon: Icon(Icons.lock),
+//                             labelText: "Teclee el precio",
+//                           ),
+//                         ),
+//                       ),
+
+                                          SizedBox(
+                                            height: 15.0,
+                                          ),
+
+                                          Row(
+                                              children: <Widget>[
+
+                                                NiceButton(
+                                                  fontSize: 10,
+                                                  width: 100,
+                                                  elevation: 8.0,
+                                                  radius: 45.0,
+                                                  text: "Aceptar",
+                                                  background: firstColor,
+                                                  onPressed: () async {
 
 
+                                                        //hideClosePedido();
+                                                        Pedido elpedido = await cierraPedido();
 
+                                                        Navigator.pushReplacement(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) => PdfPrevio(pedido : elpedido),
+                                                          ),
+                                                        );
+
+
+                                                  },
+                                                ),
+
+                                                NiceButton(
+                                                  fontSize: 10,
+                                                  width: 100,
+                                                  elevation: 8.0,
+                                                  radius: 45.0,
+                                                  text: "Cancelar",
+                                                  background: firstColor,
+                                                  onPressed: () {
+                                                    hideClosePedido();
+                                                  },
+                                                ),
+
+                                              ])
+
+
+                                        ],
+                                      ),
+
+                                      //                      transform: Matrix4.rotationZ(0.1),
+                                    ),
+                                  ),
+                                ),
+
+
+                                // Expanded(
+                                // flex: 1,
+                                // child: Container(
+                                // constraints: BoxConstraints.expand(
+                                // height:  500 ,
+                                // ),
+                                // padding: const EdgeInsets.all(8.0),
+                                // color: Colors.white,
+                                // alignment: Alignment.topLeft,
+                                // child:
+                                //
+                                // Column(
+                                // children: <Widget>[
+                                //
+                                // ],
+                                // ),
+                                // ),
+                                // ),
+
+
+                              ]
+                          )
+                      )
 
 
                     ],
                   );
-
           }
         }
     );
+
 
     return new Scaffold(
 
@@ -639,43 +1061,76 @@ class _PedidosMantoState extends State<PedidosManto> {
           title: new Text("Pedidos"),
         ),
 
+
         floatingActionButton: Column(
 
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-//              FloatingActionButton(
-//                child: Icon(
-//                    Icons.add
-//                ),
-//                onPressed: () {
-//                  //...
-//                },
-//                heroTag: null,
-//              ),
-//              SizedBox(
-//                height: 10,
-//              ),
+
               FloatingActionButton(
+
+                child: Icon(
+                    Icons.send_to_mobile
+                ),
+                onPressed: () {
+                  showClosePedido();
+                  //newRecord();
+                },
+                heroTag: null,
+                tooltip: "Cerrar el Pedido",
+              ),
+
+              SizedBox(
+                height: 10,
+              ),
+
+              FloatingActionButton(
+                tooltip: "Nuevo Pedido",
+                child: Icon(
+                    Icons.add
+                ),
+                onPressed: () {
+                  showToast();
+                  newRecord();
+                },
+                heroTag: null,
+              ),
+
+              SizedBox(
+                height: 10,
+              ),
+
+
+
+              FloatingActionButton(
+                tooltip: "Salvar el Pedido",
                 child: Icon(
                     Icons.save
                 ),
-                onPressed: () {
-                     saveRecord();
+                onPressed: () async {
+
+                        Pedido elpedido = await saveRecord();
+                        actionButtonRaised();
+
+                        // Navigator.pushReplacement(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => PdfPrevio(pedido : elpedido),
+                        //   ),
+                        // );
+
                 },
                 heroTag: null,
               )
+
             ]
         ),
-
 
 
         body: new SingleChildScrollView(
           child: futureBuilder,
         )
     );
-
-
-
   }
 
   void _getSelectedRowInfo() {
@@ -683,15 +1138,11 @@ class _PedidosMantoState extends State<PedidosManto> {
   }
 
 
-
-
-
   Widget createDataTable(BuildContext context, AsyncSnapshot snapshot) {
-
-    Pedido pedido = snapshot.data["onepedido"] ;
+    Pedido pedido = snapshot.data["onepedido"];
     values = pedido.pedidosdetalle;
 
-    return   DataTable(
+    return DataTable(
       onSelectAll: (b) {},
       sortAscending: true,
       columns: <DataColumn>[
@@ -720,62 +1171,62 @@ class _PedidosMantoState extends State<PedidosManto> {
       ],
       rows: values
           .map(
-            (itemRow) => DataRow(
-          cells: [
-            DataCell(
-              Text(itemRow.id.toString()),
-              showEditIcon: true,
-              placeholder: true,
-              onTap: () {
-                 //Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosIntro( detalle: itemRow)));
-                 editRecord(itemRow);
-              },
+            (itemRow) =>
+            DataRow(
+              cells: [
+                DataCell(
+                  Text(itemRow.id.toString()),
+                  showEditIcon: true,
+                  placeholder: true,
+                  onTap: () {
+                    //Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosIntro( detalle: itemRow)));
+                    showToast();
+                    editRecord(itemRow);
+                  },
+                ),
+                DataCell(
+                  Text(itemRow.articulo_id.toString()),
+                  showEditIcon: false,
+                  placeholder: false,
+                  //onTap: actionButtonRaised(itemRow),
+                ),
+                DataCell(
+                  Text(itemRow.articulodescripcion),
+                  showEditIcon: false,
+                  placeholder: false,
+                  //onTap: actionButtonRaised(itemRow),
+                ),
+                DataCell(
+                  Text(itemRow.cantidad.toString()),
+                  showEditIcon: false,
+                  placeholder: false,
+                  //onTap: actionButtonRaised,
+                ),
+                DataCell(
+                  Text(itemRow.precio.toString()),
+                  showEditIcon: false,
+                  placeholder: false,
+                  //onTap: actionButtonRaised,
+                ),
+                DataCell(
+                  Text(itemRow.total.toString()),
+                  showEditIcon: false,
+                  placeholder: false,
+                  //onTap: actionButtonRaised,
+                ),
+                DataCell(IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    _deleteRecord(itemRow);
+                  },
+                )
+                )
+              ],
             ),
-            DataCell(
-              Text(itemRow.articulo_id.toString()),
-              showEditIcon: false,
-              placeholder: false,
-              //onTap: actionButtonRaised(itemRow),
-            ),
-            DataCell(
-              Text(itemRow.articulodescripcion),
-              showEditIcon: false,
-              placeholder: false,
-              //onTap: actionButtonRaised(itemRow),
-            ),
-            DataCell(
-              Text(itemRow.cantidad.toString()),
-              showEditIcon: false,
-              placeholder: false,
-              //onTap: actionButtonRaised,
-            ),
-            DataCell(
-              Text(itemRow.precio.toString()),
-              showEditIcon: false,
-              placeholder: false,
-              //onTap: actionButtonRaised,
-            ),
-            DataCell(
-              Text(itemRow.total.toString()),
-              showEditIcon: false,
-              placeholder: false,
-              //onTap: actionButtonRaised,
-            ),
-            DataCell(IconButton(
-            icon: Icon(Icons.delete),
-            onPressed: () {
-                _deleteRecord(itemRow);
-            },
-            )
-            )
-          ],
-        ),
       )
           .toList(),
     );
-
-
-    }
+  }
 
 
 //  Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
@@ -837,12 +1288,14 @@ class _PedidosMantoState extends State<PedidosManto> {
 
   Future<void> actionButtonRaised() {
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ListaPedidos(),
-      ),
-    );
+    Navigator.pushNamed(context, 'listapedidos');
+
+    // Navigator.pushReplacement(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => ListaPedidos(),
+    //   ),
+    // );
 
   }
 
@@ -854,7 +1307,7 @@ class _PedidosMantoState extends State<PedidosManto> {
   }
 
 
-  editRecord(Pedido_detalle  itemRow) {
+  editRecord(Pedido_detalle itemRow) {
     var _detalle = itemRow;
     _idDetalleController.text = _detalle.id.toString();
     _articuloController.text = _detalle.articulodescripcion;
@@ -863,9 +1316,15 @@ class _PedidosMantoState extends State<PedidosManto> {
   }
 
   _deleteRecord(Pedido_detalle detail) async {
+    await service.deletePedidoDetalleById(detail.id.toString());
+    values.remove(detail);
 
-             await service.deletePedidoDetalleById(detail.id.toString());
-             values.remove(detail);
+    var itvalues = values.iterator;
+    eltotal = 0.0;
+    while(itvalues.moveNext()){
+      Pedido_detalle eldetalle =  itvalues.current;
+      eltotal = eltotal + eldetalle.total;
+    }
 
     //values = await service.getListaPedidoDetalleByIdPedido(onepedido.id.toString());
 
@@ -874,60 +1333,190 @@ class _PedidosMantoState extends State<PedidosManto> {
   }
 
 
+  Future<Pedido>  cierraPedido() async {
+
+    final SharedPreferences prefs = await _prefs;
+    prefs.getInt("usuario_id");
+    prefs.getString("usuario_nombre");
+
+    Pedido pedido = new Pedido();
+    pedido.id = int.parse(_numberpedidoController.text);
+    pedido.tipopedido_id = 1;
+
+    pedido.clientes_id = _currentcliente.id;
+    pedido.clientenombre = _currentcliente.nombre;
+
+    pedido.hielera_id = _currenthielera.id;
+    pedido.hieleranombre = _currenthielera.descripcion;
+
+    pedido.usrabrio_id = widget.pedido.usrabrio_id;
+    pedido.usrcerro_id = prefs.getInt("usuario_id");
+    pedido.status = 'cerrado';
+    final f = new DateFormat('yyyy-MM-dd hh:mm');
+    pedido.fechapedido = f.format(
+        new DateFormat("yyyy-MM-dd hh:mm").parse(widget.pedido.fechapedido));
+    pedido.fechacierre = f.format(DateTime.now());
+    pedido.areaentrega = _areaEntregaController.text;
+    pedido.usuario = prefs.getString("usuario_clave");
+
+    pedido.pedidosdetalle = values;
+    var itvalues = values.iterator;
+    eltotal = 0.0;
+    while(itvalues.moveNext()){
+            Pedido_detalle eldetalle =  itvalues.current;
+            eltotal = eltotal + eldetalle.total;
+    }
+    pedido.total=eltotal;
+
+    pedido.vendedor_id = _currentvendedor.id;
+    pedido.vendedornombre = _currentvendedor.nombre;
 
 
+    await service.salvaOnePedido(pedido);
 
-  addRecord(){
-
-     // int.parse( _idDetalleController.text );
-
-     Pedido_detalle value = new Pedido_detalle();
-     value.id=int.parse(_idDetalleController.text);
-     value.articulo_id=_currentarticulo.id;
-     value.articulodescripcion=_currentarticulo.descripcion;
-     value.cantidad= double.parse( _cantidadController.text );
-     value.precio= double.parse( _precioController.text );
-     value.total= value.cantidad * value.precio;
-     value.pedido_id=int.parse(_numberpedidoController.text);
-
-     if(value.id==0){
-           values.add(value);
-     }else {
-           int index = 0;
-           for (Pedido_detalle element in values) {
-             if (element.id == int.parse(_idDetalleController.text)) {
-               values[index] = value;
-               break;
-             }
-             index = index + 1;
-           }
-     }
-     setState(() {});
+    //actionButtonRaised();
+    return pedido;
 
   }
 
 
+  // void testReceipt(NetworkPrinter printer) {
+  //   printer.text(
+  //       'Regular: aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ');
+  //   printer.text('Special 1: àÀ èÈ éÉ ûÛ üÜ çÇ ôÔ',
+  //       styles: PosStyles(codeTable: 'CP1252'));
+  //   printer.text('Special 2: blåbærgrød',
+  //       styles: PosStyles(codeTable: 'CP1252'));
+  //
+  //   printer.text('Bold text', styles: PosStyles(bold: true));
+  //   printer.text('Reverse text', styles: PosStyles(reverse: true));
+  //   printer.text('Underlined text',
+  //       styles: PosStyles(underline: true), linesAfter: 1);
+  //   printer.text('Align left', styles: PosStyles(align: PosAlign.left));
+  //   printer.text('Align center', styles: PosStyles(align: PosAlign.center));
+  //   printer.text('Align right',
+  //       styles: PosStyles(align: PosAlign.right), linesAfter: 1);
+  //
+  //   printer.text('Text size 200%',
+  //       styles: PosStyles(
+  //         height: PosTextSize.size2,
+  //         width: PosTextSize.size2,
+  //       ));
+  //
+  //   printer.feed(2);
+  //   printer.cut();
+  // }
 
-  saveRecord() async {
 
-      Pedido pedido = new Pedido();
-      pedido.id = int.parse(_numberpedidoController.text);
-      pedido.tipopedido_id=1;
-      pedido.clientes_id = _currentcliente.id;
-      pedido.vendedor_id = _currentvendedor.id;
-      final f = new DateFormat('yyyy-MM-dd hh:mm');
-      pedido.fechapedido = f.format(DateTime.now());
-      pedido.areaentrega = _areaEntregaController.text;
-      pedido.usuario = "jdelgado";
-      pedido.pedidosdetalle = values;
-      await service.salvaOnePedido(pedido);
-      actionButtonRaised();
+  addRecord() {
+    // int.parse( _idDetalleController.text );
+
+    Pedido_detalle value = new Pedido_detalle();
+    value.id = int.parse(_idDetalleController.text);
+    value.articulo_id = _currentprecio.articulo_id;
+    value.articulodescripcion = _currentprecio.descripcion;
+    value.cantidad = double.parse(_cantidadController.text);
+    value.precio = double.parse(_precioController.text);
+    value.total = value.cantidad * value.precio;
+    value.pedido_id = int.parse(_numberpedidoController.text);
+
+    if (value.id == 0) {
+      values.add(value);
+    } else {
+      int index = 0;
+      for (Pedido_detalle element in values) {
+        if (element.id == int.parse(_idDetalleController.text)) {
+          values[index] = value;
+          break;
+        }
+        index = index + 1;
+      }
+    }
+
+    var itvalues = values.iterator;
+    eltotal = 0.0;
+    while(itvalues.moveNext()){
+      Pedido_detalle eldetalle =  itvalues.current;
+      eltotal = eltotal + eldetalle.total;
+    }
+
+
+    setState(() {});
+
+  }
+
+
+  Future<Pedido> saveRecord() async {
+
+    final SharedPreferences prefs = await _prefs;
+    prefs.getInt("usuario_id");
+    prefs.getString("usuario_nombre");
+
+    Pedido pedido = new Pedido();
+    pedido.id = int.parse(_numberpedidoController.text);
+    pedido.tipopedido_id = 1;
+    pedido.clientes_id = _currentcliente.id;
+    pedido.clientenombre = _currentcliente.nombre;
+    pedido.vendedor_id = _currentvendedor.id;
+
+    final f = new DateFormat('yyyy-MM-dd hh:mm');
+    pedido.fechapedido = f.format(
+        new DateFormat("yyyy-MM-dd hh:mm").parse(onepedido.fechapedido));
+
+    pedido.areaentrega = _areaEntregaController.text;
+    pedido.usuario = "jdelgado";
+    pedido.pedidosdetalle = values;
+
+    pedido.vendedor_id = _currentvendedor.id;
+    pedido.vendedornombre = _currentvendedor.nombre;
+
+    pedido.usrabrio_id = prefs.get("usuario_id");
+
+    await service.salvaOnePedido(pedido);
+
+    return pedido;
+
+  }
+
+  Future<Uint8List> imprimepedido(PdfPageFormat format, Pedido elpedido) async
+  {
+
+
+    final pdf = pw.Document();
+
+
+    // pdf.addPage(pw.Page(
+    //     pageFormat: PdfPageFormat.a4,
+    //     build: (pw.Context context) {
+    //       return pw.Center(
+    //         child: pw.Text("Hello World"),
+    //       ); // Center
+    //     })); //
+
+    pdf.addPage(pw.Page(
+      //pageFormat: PdfPageFormat.a4,
+        pageFormat: PdfPageFormat(8 * PdfPageFormat.cm, 10 * PdfPageFormat.cm, marginAll: 0.5 * PdfPageFormat.cm),
+        build: (pw.Context context) {
+          return pw.Row(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text("Hello World"),
+                // _contentTable(context,onepedido)
+              ]
+          ); // Center
+        }));
+
+
+     return pdf.save();
 
   }
 
 
 
 }
+
+
+
 
 class Item {
   const Item(this.name,this.icon);

@@ -36,6 +36,7 @@ class Precio{
     };
   }
 
-
+  @override
+  String toString() => descripcion;
 
 }

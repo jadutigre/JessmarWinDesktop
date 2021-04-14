@@ -4,12 +4,12 @@
 
 #include "generated_plugin_registrant.h"
 
-#include <file_chooser_plugin.h>
-#include <window_size_plugin.h>
+#include <file_chooser/file_chooser_plugin.h>
+#include <printing/printing_plugin.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
   FileChooserPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FileChooserPlugin"));
-  WindowSizePluginRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("WindowSizePlugin"));
+  PrintingPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("PrintingPlugin"));
 }

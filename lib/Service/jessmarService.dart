@@ -30,10 +30,14 @@ import 'package:jessmarwindesk/Domains/vendedores.dart';
 
 class JessmarService{
 
+  //String url = 'http://www.spcsystems-cancun.com/JessmarServices/jessmar';
+  String url = 'http://localhost:8084/JessmarServices/jessmar';
+
+
   Future<List<Articulo>> getListaArticulos() async {
     print("getListaArticulos");
 
-    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaArticulos';
+    String uri = url+'/getListaArticulos';
     Map<String, String> headers = {
       "Content-Type": "application/x-www-form-urlencoded",
       "Accept": "application/json"
@@ -60,7 +64,7 @@ class JessmarService{
   Future<List<Pedido>> getListaPedidos() async {
     print("getListaPedidos");
 
-    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaPedidos';
+    String uri = url+'/getListaPedidos';
     Map<String, String> headers = {
       "Content-Type": "application/x-www-form-urlencoded",
       "Accept": "application/json"
@@ -86,7 +90,7 @@ class JessmarService{
   Future<List<Unidadmedida>> getListaUnidadesMedida() async {
     print("getListaUnidadMedida");
 
-    String uri = 'http://localhost:8084/JessmarServices/jessmar/getCatalogoUnidadesMedida';
+    String uri = url+'/getCatalogoUnidadesMedida';
     Map<String, String> headers = {
       "Content-Type": "application/x-www-form-urlencoded",
       "Accept": "application/json"
@@ -116,7 +120,7 @@ class JessmarService{
 
     List<Pedido> pedidos;
 
-    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaPedidosFull';
+    String uri = url+'/getListaPedidosFull';
     Map<String, String> headers = {
       "Content-Type": "application/x-www-form-urlencoded",
       "Accept": "application/json"
@@ -149,7 +153,7 @@ class JessmarService{
 
     List<Articulo> articulos;
 
-    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaArticulosFull';
+    String uri = url+'/getListaArticulosFull';
     Map<String, String> headers = {
       "Content-Type": "application/x-www-form-urlencoded",
       "Accept": "application/json"
@@ -183,7 +187,7 @@ class JessmarService{
 
     List<Pedido_detalle> detailPedido;
 
-    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaPedidoDetalleByIdPedido';
+    String uri = url+'/getListaPedidoDetalleByIdPedido';
     Map<String, String> headers = {
       "Content-Type": "application/x-www-form-urlencoded",
       "Accept": "application/json"
@@ -220,7 +224,7 @@ class JessmarService{
 
     List<Precio> precios;
 
-    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaPreciosByIdCliente';
+    String uri = url+'/getListaPreciosByIdCliente';
     Map<String, String> headers = {
       "Content-Type": "application/x-www-form-urlencoded",
       "Accept": "application/json"
@@ -252,7 +256,7 @@ class JessmarService{
   Future<List<Cliente>> getListaClientes() async {
     print("getListaClientes");
 
-    String uri = 'http://localhost:8084/JessmarServices/jessmar/getCatalogoClientes';
+    String uri = url+'/getCatalogoClientes';
     Map<String, String> headers = {
       "Content-Type": "application/x-www-form-urlencoded",
       "Accept": "application/json"
@@ -278,7 +282,7 @@ class JessmarService{
   Future<List<Usocfdi>> getListaUsocfdi() async {
     print("getListaUsocfdi");
 
-    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaUsoCFDI';
+    String uri = url+'/getListaUsoCFDI';
     Map<String, String> headers = {
       "Content-Type": "application/x-www-form-urlencoded",
       "Accept": "application/json"
@@ -304,7 +308,7 @@ class JessmarService{
   Future<List<Vendedor>> getListaVendedores() async {
     print("getListaVendedores");
 
-    String uri = 'http://localhost:8084/JessmarServices/jessmar/getCatalogoVendedores';
+    String uri = url+'/getCatalogoVendedores';
     Map<String, String> headers = {
       "Content-Type": "application/x-www-form-urlencoded",
       "Accept": "application/json"
@@ -332,7 +336,7 @@ class JessmarService{
   Future<List<Hielera>> getListaHieleras() async {
     print("getListaHieleras");
 
-    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaHieleras';
+    String uri = url+'/getListaHieleras';
     Map<String, String> headers = {
       "Content-Type": "application/x-www-form-urlencoded",
       "Accept": "application/json"
@@ -358,7 +362,7 @@ class JessmarService{
   Future<List<Grupo>> getListaGrupos() async {
     print("getListaGrupos");
 
-    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaGrupo';
+    String uri = url+'/getListaGrupo';
     Map<String, String> headers = {
       "Content-Type": "application/x-www-form-urlencoded",
       "Accept": "application/json"
@@ -389,7 +393,7 @@ class JessmarService{
   Future<List<Pais>> getListaPaises() async {
     print("getListaPais");
 
-    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaPaises';
+    String uri = url+'/getListaPaises';
     Map<String, String> headers = {
       "Content-Type": "application/x-www-form-urlencoded",
       "Accept": "application/json"
@@ -415,7 +419,7 @@ class JessmarService{
   Future<List<Estado>> getListaEstados() async {
     print("getListaEstados");
 
-    String uri = 'http://localhost:8084/JessmarServices/jessmar/getListaEstadosFull';
+    String uri = url+'/getListaEstadosFull';
     Map<String, String> headers = {
       "Content-Type": "application/x-www-form-urlencoded",
       "Accept": "application/json"
@@ -443,7 +447,7 @@ class JessmarService{
   Future<Usuario> getOneUsuario( String idusuario ) async {
     print("getOneUsuario");
 
-    String uri = 'http://localhost:8084/JessmarServices/jessmar/getOneUsuario';
+    String uri = url+'/getOneUsuario';
     Map<String, String> headers = {
       "Content-Type": "application/x-www-form-urlencoded",
       "Accept": "application/json"
@@ -482,7 +486,7 @@ class JessmarService{
 
     try {
 
-        String uri = 'http://localhost:8084/JessmarServices/jessmar/getPedidoById';
+        String uri = url+'/getPedidoById';
         Map<String, String> headers = {
           "Content-Type": "application/x-www-form-urlencoded",
           "Accept": "application/json"
@@ -501,7 +505,7 @@ class JessmarService{
         if( responseBody!=null && responseBody.length!=0 ){
           var json = jsonDecode(responseBody)['payload'];
           pedido = Pedido.fromJson(json);
-          //print(json);
+          print('One pedido:'+json);
         }
 
     } catch (e) {    // <-- removing the on Exception clause
@@ -518,7 +522,7 @@ class JessmarService{
 
     try {
 
-      String uri = 'http://localhost:8084/JessmarServices/jessmar/deletePedidoDetalleById';
+      String uri = url+'/deletePedidoDetalleById';
       Map<String, String> headers = {
         "Content-Type": "application/x-www-form-urlencoded",
         "Accept": "application/json"
@@ -557,7 +561,7 @@ class JessmarService{
 
     try {
 
-      String uri = 'http://localhost:8084/JessmarServices/jessmar/getOneClienteById';
+      String uri = url+'/getOneClienteById';
       Map<String, String> headers = {
         "Content-Type": "application/x-www-form-urlencoded",
         "Accept": "application/json"
@@ -593,7 +597,7 @@ class JessmarService{
 
     try {
 
-      String uri = 'http://localhost:8084/JessmarServices/jessmar/getOneVendedorById';
+      String uri = url+'/getOneVendedorById';
       Map<String, String> headers = {
         "Content-Type": "application/x-www-form-urlencoded",
         "Accept": "application/json"
@@ -630,7 +634,7 @@ class JessmarService{
 
     try {
 
-      String uri = 'http://localhost:8084/JessmarServices/jessmar/getUnidadMedidaById';
+      String uri = url+'/getUnidadMedidaById';
       Map<String, String> headers = {
         "Content-Type": "application/x-www-form-urlencoded",
         "Accept": "application/json"
@@ -674,7 +678,7 @@ class JessmarService{
 
     try {
 
-      String uri = 'http://localhost:8084/JessmarServices/jessmar/insertaPedido';
+      String uri = url+'/insertaPedido';
       Map<String, String> headers = {
         "Content-Type": "application/x-www-form-urlencoded",
         "Accept": "application/json"
@@ -713,7 +717,7 @@ class JessmarService{
 
     try {
 
-      String uri = 'http://localhost:8084/JessmarServices/jessmar/insertaArticulo';
+      String uri = url+'/insertaArticulo';
       Map<String, String> headers = {
         "Content-Type": "application/x-www-form-urlencoded",
         "Accept": "application/json"
@@ -752,7 +756,7 @@ class JessmarService{
 
     try {
 
-      String uri = 'http://localhost:8084/JessmarServices/jessmar/insertaCliente';
+      String uri = url+'/insertaCliente';
       Map<String, String> headers = {
         "Content-Type": "application/x-www-form-urlencoded",
         "Accept": "application/json"
@@ -791,7 +795,7 @@ class JessmarService{
 
     try {
 
-      String uri = 'http://localhost:8084/JessmarServices/jessmar/insertaVendedor';
+      String uri = url+'/insertaVendedor';
       Map<String, String> headers = {
         "Content-Type": "application/x-www-form-urlencoded",
         "Accept": "application/json"
@@ -829,7 +833,7 @@ class JessmarService{
 
     try {
 
-      String uri = 'http://localhost:8084/JessmarServices/jessmar/insertaHielera';
+      String uri = url+'/insertaHielera';
       Map<String, String> headers = {
         "Content-Type": "application/x-www-form-urlencoded",
         "Accept": "application/json"
@@ -868,7 +872,7 @@ class JessmarService{
 
     try {
 
-            String uri = 'http://localhost:8084/JessmarServices/jessmar/insertaPrecioArticuloCliente';
+            String uri = url+'/insertaPrecioArticuloCliente';
             Map<String, String> headers = {
               "Content-Type": "application/x-www-form-urlencoded",
               "Accept": "application/json"

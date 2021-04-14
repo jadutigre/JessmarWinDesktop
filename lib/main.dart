@@ -1,6 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:jessmarwindesk/Vistas/FormArticulos.dart';
+import 'package:jessmarwindesk/Vistas/ListaArticulos.dart';
+import 'package:jessmarwindesk/Vistas/ListaClientes.dart';
+import 'package:jessmarwindesk/Vistas/ListaHieleras.dart';
+import 'package:jessmarwindesk/Vistas/ListaPedidos.dart';
+import 'package:jessmarwindesk/Vistas/ListaVendedores.dart';
+import 'package:jessmarwindesk/Vistas/MenuPrincipal.dart';
 import 'package:jessmarwindesk/localization.dart';
 import 'package:jessmarwindesk/Vistas/loginVista.dart';
 
@@ -57,6 +64,13 @@ class MyApp extends StatelessWidget {
         // When navigating to the "/" route, build the FirstScreen widget.
         '/': (context) => LoginVista(),
         // When navigating to the "/second" route, build the SecondScreen widget.
+        "listapedidos":(BuildContext context)=> new ListaPedidos(),
+        "listaclientes":(BuildContext context)=> new ListaClientes(),
+        "listaarticulos":(BuildContext context)=> new ListaArticulos(),
+        "listavendedores":(BuildContext context)=> new ListaVendedores(),
+        "listahieleras":(BuildContext context)=> new ListaHieleras(),
+        "menuprincipal":(BuildContext context)=> new MenuPrincipal(),
+
 //        '/Registro': (context) => LlegadasReservas(),
 //        '/llegadas': (context) => LlegadasReservas(),
 //        '/Ocupacion': (context) => LlegadasReservas(),

@@ -5,6 +5,7 @@ import 'package:jessmarwindesk/Domains/tipoLenguaje.dart';
 import 'package:jessmarwindesk/Domains/usuario.dart';
 import 'package:jessmarwindesk/Service/jessmarService.dart';
 import 'package:jessmarwindesk/Vistas/MenuPrincipal.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../localization.dart';
 
 class LoginVista extends StatefulWidget {
@@ -13,6 +14,8 @@ class LoginVista extends StatefulWidget {
 }
 
 class _MyAppState extends State<LoginVista> {
+
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   Future<List<TipoLenguaje>> tiposlenguajes ;
   List<TipoLenguaje> ltiposlenguajes = new List<TipoLenguaje>() ;
@@ -156,12 +159,16 @@ class _MyAppState extends State<LoginVista> {
   }
 
   void toLlegadasProbables(BuildContext context){
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-       builder: (context) => MenuPrincipal(),
-      ),
-    );
+
+    Navigator.pushNamed(context, 'menuprincipal');
+
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //    builder: (context) => MenuPrincipal(),
+    //   ),
+    // );
+
   }
 
 
@@ -316,12 +323,14 @@ class _MyAppState extends State<LoginVista> {
       Respuesta message = await autentica.validaAutenticacion(claveusuario, password);
       if(message.status==1){
 
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>  MenuPrincipal()
-              ),
-            );
+            Navigator.pushNamed(context, 'menuprincipal');
+
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //       builder: (context) =>  MenuPrincipal()
+            //   ),
+            // );
 
       }else{
 

@@ -26,86 +26,311 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
         body:
 
         Center(
-          child: Container(
-            width: MediaQuery.of(context).size.width / 1.50,
-            padding: EdgeInsets.all(16.0),
-            child: GridView.count(
-              crossAxisCount: 4,
-              crossAxisSpacing: 22.0,
-              mainAxisSpacing: 8.0,
-              children: <Widget>[
-                  RaisedButton(
-                  child: Image.asset("images/pedidos.jpg"),
-                  color: Theme.of(context).backgroundColor,
-                  elevation: 0.0,
-                  splashColor: Colors.blueGrey,
-                  onPressed: actionButtonRaised,
-                ),
-                RaisedButton(
-                  child: Image.asset("images/notaventa.png"),
-                  color: Theme.of(context).backgroundColor,
-                  elevation: 0.0,
-                  splashColor: Colors.blueGrey,
-                  onPressed: () {
-                    // Perform some action
-                  },
-                ),
-                RaisedButton(
-                  child: Image.asset("images/factura.jpg"),
-                  color: Theme.of(context).backgroundColor,
-                  elevation: 0.0,
-                  splashColor: Colors.blueGrey,
-                  onPressed: () {
-                    // Perform some action
-                  },
-                ),
-                RaisedButton(
-                  child: Image.asset("images/inventarios.jpg"),
-                  color: Theme.of(context).backgroundColor,
-                  elevation: 0.0,
-                  splashColor: Colors.blueGrey,
-                  onPressed: () {
-                    // Perform some action
-                  },
-                ),
-                RaisedButton(
-                  child: Image.asset("images/productos.jpg"),
-                  color: Theme.of(context).backgroundColor,
-                  elevation: 0.0,
-                  splashColor: Colors.blueGrey,
-                  onPressed: actionButtonArticulos,
-                ),
+          child:
+
+          Padding(
+            padding: const EdgeInsets.only(top: 60.0),
+            child: Container(
+              width: MediaQuery.of(context).size.width / 1.50,
+              padding: EdgeInsets.all(16.0),
+              child: GridView.count(
+                crossAxisCount: 4,
+                crossAxisSpacing: 22.0,
+                mainAxisSpacing: 8.0,
+                children: <Widget>[
+
+                  Container(
+                    //margin: EdgeInsets.symmetric(vertical:10.0),
+                      color: Colors.blueGrey,
+                      //height: 244,
+                      child: InkWell(
+                          child: Container(
+                            width: 120.0,
+                            child: Card(
+                              child: Wrap(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Center(child: Image.asset("images/pedidos.jpg",height: 120, width:   120 )),
+                                  ),
+                                  ListTile(
+                                    title:
+                                    new Row(children: <Widget>[
+                                      new Text("PEDIDOS",
+                                        style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),)
+                                    ], mainAxisAlignment: MainAxisAlignment.center,),
+                                    // subtitle: new Row(children: <Widget>[
+                                    //   new Text("Centered Title#",
+                                    //     style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 8.0),)
+                                    // ], mainAxisAlignment: MainAxisAlignment.center,),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          onTap: (){
+                                actionButtonRaised();
+                          }
+                      )
+                  ),
 
 
-                RaisedButton(
-                  child: Image.asset("images/clientes.png"),
-                  color: Theme.of(context).backgroundColor,
-                  elevation: 0.0,
-                  splashColor: Colors.blueGrey,
-                  onPressed: actionButtonClientes,
-                ),
+                  Container(
+                    //margin: EdgeInsets.symmetric(vertical:10.0),
+                      color: Colors.blueGrey,
+                      //height: 244,
+                      child: InkWell(
+                          child: Container(
+                            width: 120.0,
+                            child: Card(
+                              child: Wrap(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Center(child: Image.asset("images/notaventa.png",height: 120, width:   120 )),
+                                  ),
+                                  ListTile(
+                                    title:
+                                    new Row(children: <Widget>[
+                                      new Text("REMISIONES",
+                                        style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),)
+                                    ], mainAxisAlignment: MainAxisAlignment.center,),
+                                    // subtitle: new Row(children: <Widget>[
+                                    //   new Text("Centered Title#",
+                                    //     style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 8.0),)
+                                    // ], mainAxisAlignment: MainAxisAlignment.center,),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          onTap: (){
+                            //actionButtonRaised();
+                          }
+                      )
+                  ),
 
-                RaisedButton(
-                  child:  Image.asset("images/vendedores.png"),
-                  color: Theme.of(context).backgroundColor,
-                  elevation: 0.0,
-                  splashColor: Colors.blueGrey,
-                  onPressed: actionButtonVendedores,
-                ),
+
+                  Container(
+                    //margin: EdgeInsets.symmetric(vertical:10.0),
+                      color: Colors.blueGrey,
+                      //height: 244,
+                      child: InkWell(
+                          child: Container(
+                            width: 120.0,
+                            child: Card(
+                              child: Wrap(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Center(child: Image.asset("images/factura.jpg",height: 120, width:   120 )),
+                                  ),
+                                  ListTile(
+                                    title:
+                                    new Row(children: <Widget>[
+                                      new Text("FACTURAS",
+                                        style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),)
+                                    ], mainAxisAlignment: MainAxisAlignment.center,),
+                                    // subtitle: new Row(children: <Widget>[
+                                    //   new Text("Centered Title#",
+                                    //     style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 8.0),)
+                                    // ], mainAxisAlignment: MainAxisAlignment.center,),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          onTap: (){
+                            //actionButtonRaised();
+                          }
+                      )
+                  ),
 
 
-                RaisedButton(
-                  child: Image.asset("images/hielera.jpg"),
-                  color: Theme.of(context).backgroundColor,
-                  elevation: 0.0,
-                  splashColor: Colors.blueGrey,
-                  onPressed: actionButtonHieleras,
-                ),
+
+                  Container(
+                    //margin: EdgeInsets.symmetric(vertical:10.0),
+                      color: Colors.blueGrey,
+                      //height: 244,
+                      child: InkWell(
+                          child: Container(
+                            width: 120.0,
+                            child: Card(
+                              child: Wrap(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Center(child: Image.asset("images/informes.jpg",height: 120, width:   120 )),
+                                  ),
+                                  ListTile(
+                                    title:
+                                    new Row(children: <Widget>[
+                                      new Text("INFORMES",
+                                        style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),)
+                                    ], mainAxisAlignment: MainAxisAlignment.center,),
+                                    // subtitle: new Row(children: <Widget>[
+                                    //   new Text("Centered Title#",
+                                    //     style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 8.0),)
+                                    // ], mainAxisAlignment: MainAxisAlignment.center,),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          onTap: (){
+                            //actionButtonRaised();
+                          }
+                      )
+                  ),
+
+
+                  Container(
+                    //margin: EdgeInsets.symmetric(vertical:10.0),
+                      color: Colors.blueGrey,
+                      //height: 244,
+                      child: InkWell(
+                          child: Container(
+                            width: 120.0,
+                            child: Card(
+                              child: Wrap(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Center(child: Image.asset("images/productos.jpg",height: 120, width:   120 )),
+                                  ),
+                                  ListTile(
+                                    title:
+                                    new Row(children: <Widget>[
+                                      new Text("PRODUCTOS",
+                                        style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),)
+                                    ], mainAxisAlignment: MainAxisAlignment.center,),
+                                    // subtitle: new Row(children: <Widget>[
+                                    //   new Text("Centered Title#",
+                                    //     style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 8.0),)
+                                    // ], mainAxisAlignment: MainAxisAlignment.center,),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          onTap: (){
+                            actionButtonArticulos();
+                          }
+                      )
+                  ),
+
+
+                  Container(
+                    //margin: EdgeInsets.symmetric(vertical:10.0),
+                      color: Colors.blueGrey,
+                      //height: 244,
+                      child: InkWell(
+                          child: Container(
+                            width: 120.0,
+                            child: Card(
+                              child: Wrap(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Center(child: Image.asset("images/clientes.png",height: 120, width:   120 )),
+                                  ),
+                                  ListTile(
+                                    title:
+                                    new Row(children: <Widget>[
+                                      new Text("CLIENTES",
+                                        style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),)
+                                    ], mainAxisAlignment: MainAxisAlignment.center,),
+                                    // subtitle: new Row(children: <Widget>[
+                                    //   new Text("Centered Title#",
+                                    //     style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 8.0),)
+                                    // ], mainAxisAlignment: MainAxisAlignment.center,),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          onTap: (){
+                            actionButtonClientes();
+                          }
+                      )
+                  ),
+
+                  Container(
+                    //margin: EdgeInsets.symmetric(vertical:10.0),
+                      color: Colors.blueGrey,
+                      //height: 244,
+                      child: InkWell(
+                          child: Container(
+                            width: 120.0,
+                            child: Card(
+                              child: Wrap(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Center(child: Image.asset("images/vendedores.png",height: 120, width:   120 )),
+                                  ),
+                                  ListTile(
+                                    title:
+                                    new Row(children: <Widget>[
+                                      new Text("VENDEDORES",
+                                        style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),)
+                                    ], mainAxisAlignment: MainAxisAlignment.center,),
+                                    // subtitle: new Row(children: <Widget>[
+                                    //   new Text("Centered Title#",
+                                    //     style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 8.0),)
+                                    // ], mainAxisAlignment: MainAxisAlignment.center,),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          onTap: (){
+                            actionButtonVendedores();
+                          }
+                      )
+                  ),
 
 
 
+                  Container(
+                    //margin: EdgeInsets.symmetric(vertical:10.0),
+                      color: Colors.blueGrey,
+                      //height: 244,
+                      child: InkWell(
+                          child: Container(
+                            width: 120.0,
+                            child: Card(
+                              child: Wrap(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Center(child: Image.asset("images/hielera.jpg",height: 120, width:   120 )),
+                                  ),
+                                  ListTile(
+                                    title:
+                                    new Row(children: <Widget>[
+                                      new Text("NEVERAS",
+                                        style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),)
+                                    ], mainAxisAlignment: MainAxisAlignment.center,),
+                                    // subtitle: new Row(children: <Widget>[
+                                    //   new Text("Centered Title#",
+                                    //     style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 8.0),)
+                                    // ], mainAxisAlignment: MainAxisAlignment.center,),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          onTap: (){
+                            actionButtonHieleras();
+                          }
+                      )
+                  ),
 
-                  ],
+
+
+    ],
+              ),
             ),
           ),
         )
@@ -117,71 +342,67 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
 
 
   Future<void> actionButtonRaised() async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ListaPedidos(),
-      ),
-    );
+
+    Navigator.pushNamed(context, 'listapedidos');
+
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => ListaPedidos(),
+    //   ),
+    // );
+
   }
 
     Future<void> actionButtonArticulos() async {
 
-//      Navigator.push(
-//        context,
-//        MaterialPageRoute(
-//          builder: (context) => ListaArticulos(),
-//        ),
-//      );
+      Navigator.pushNamed(context, 'listaarticulos');
 
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (BuildContext context) =>  ListaArticulos()),
-              (Route<dynamic> route) => false
-      );
+
+
+      // Navigator.pushAndRemoveUntil(
+      //     context,
+      //     MaterialPageRoute(builder: (BuildContext context) =>  ListaArticulos()),
+      //         (Route<dynamic> route) => false
+      // );
 
 
   }
 
   Future<void> actionButtonClientes() async {
 
-//    Navigator.push(
-////      context,
-////      MaterialPageRoute(
-////        builder: (context) => ListaClientes(),
-////      ),
-////    );
+    Navigator.pushNamed(context, 'listaclientes');
 
 
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (BuildContext context) =>  ListaClientes()),
-            (Route<dynamic> route) => false
-    );
+    // Navigator.pushAndRemoveUntil(
+    //     context,
+    //     MaterialPageRoute(builder: (BuildContext context) =>  ListaClientes()),
+    //         (Route<dynamic> route) => false
+    // );
 
   }
 
   Future<void> actionButtonVendedores() async {
 
+    Navigator.pushNamed(context, 'listavendedores');
 
-
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (BuildContext context) =>  ListaVendedores()),
-            (Route<dynamic> route) => false
-    );
+    // Navigator.pushAndRemoveUntil(
+    //     context,
+    //     MaterialPageRoute(builder: (BuildContext context) =>  ListaVendedores()),
+    //         (Route<dynamic> route) => false
+    // );
 
   }
 
   Future<void> actionButtonHieleras() async {
 
+    Navigator.pushNamed(context, 'listahieleras');
 
-
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (BuildContext context) =>  ListaHieleras()),
-            (Route<dynamic> route) => false
-    );
+    // Navigator.pushAndRemoveUntil(
+    //     context,
+    //     MaterialPageRoute(builder: (BuildContext context) =>  ListaHieleras()),
+    //         (Route<dynamic> route) => false
+    // );
 
   }
 

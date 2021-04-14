@@ -18,9 +18,11 @@ class Cliente{
   int pais_id;
   int estado_id;
   int usocfdi_id;
+  String razonsocial;
+  String noint;
 
   Cliente({this.id, this.iva, this.nucta, this.telefono,this.rfc,this.nombre,this.email,this.observ,this.direccion,this.ciudad,this.diascred,
-  this.noext,this.colonia,this.municipio,this.codigopost, this.pais_id, this.estado_id, this.usocfdi_id});
+  this.noext,this.colonia,this.municipio,this.codigopost, this.pais_id, this.estado_id, this.usocfdi_id, this.razonsocial, this.noint});
 
   factory Cliente.fromJson(Map<String, dynamic> parsedJson){
     return Cliente(
@@ -40,7 +42,9 @@ class Cliente{
       codigopost: parsedJson['codigopost'],
       pais_id: parsedJson['pais_id'],
       estado_id: parsedJson['estado_id'],
-      usocfdi_id: parsedJson['usocfdi_id']
+      usocfdi_id: parsedJson['usocfdi_id'],
+      razonsocial: parsedJson['razonsocial'],
+      noint: parsedJson['noint']
     );
   }
 
@@ -64,7 +68,9 @@ class Cliente{
       'codigopost': codigopost,
       'pais_id': pais_id,
       'estado_id': estado_id,
-      'usocfdi_id': usocfdi_id
+      'usocfdi_id': usocfdi_id,
+      'razonsocial': razonsocial,
+      'noint': noint
     };
   }
 

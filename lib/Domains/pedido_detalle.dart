@@ -35,5 +35,21 @@ class Pedido_detalle{
                   'pedido_id': pedido_id
           };
 
+     String getIndex(int index) {
+       switch (index) {
+         case 0:
+           return articulo_id.toString();
+         case 1:
+           return articulodescripcion;
+         case 2:
+           return precio.toString();
+         case 3:
+           return cantidad.toString();
+         case 4:
+           return total.toString();
+       }
+       return '';
+     }
+
 
 }
