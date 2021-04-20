@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:jessmarwindesk/Tools/repPedidosAbiertos.dart';
 import 'package:jessmarwindesk/Vistas/FormArticulos.dart';
 import 'package:jessmarwindesk/Vistas/ListaArticulos.dart';
 import 'package:jessmarwindesk/Vistas/ListaClientes.dart';
@@ -8,6 +9,8 @@ import 'package:jessmarwindesk/Vistas/ListaHieleras.dart';
 import 'package:jessmarwindesk/Vistas/ListaPedidos.dart';
 import 'package:jessmarwindesk/Vistas/ListaVendedores.dart';
 import 'package:jessmarwindesk/Vistas/MenuPrincipal.dart';
+import 'package:jessmarwindesk/Vistas/PedidosManto.dart';
+import 'package:jessmarwindesk/Vistas/formInformes.dart';
 import 'package:jessmarwindesk/localization.dart';
 import 'package:jessmarwindesk/Vistas/loginVista.dart';
 
@@ -26,10 +29,13 @@ void main() {
   runApp(new MyApp());
 }
 
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+
+
       localizationsDelegates: [
         AppLocalizationsDelegate(),
         GlobalMaterialLocalizations.delegate,
@@ -59,27 +65,23 @@ class MyApp extends StatelessWidget {
         // use the last one from the list (Hindi, in your case).
         return supportedLocales.last;
       },
-      initialRoute: '/',
+      // initialRoute: '/',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
-        '/': (context) => LoginVista(),
+        // '/': (context) => LoginVista(),
         // When navigating to the "/second" route, build the SecondScreen widget.
+        "loginvista":(BuildContext context)=> new LoginVista(),
         "listapedidos":(BuildContext context)=> new ListaPedidos(),
+        "pedidosmanto":(BuildContext context)=> new PedidosManto(),
         "listaclientes":(BuildContext context)=> new ListaClientes(),
         "listaarticulos":(BuildContext context)=> new ListaArticulos(),
         "listavendedores":(BuildContext context)=> new ListaVendedores(),
         "listahieleras":(BuildContext context)=> new ListaHieleras(),
         "menuprincipal":(BuildContext context)=> new MenuPrincipal(),
-
-//        '/Registro': (context) => LlegadasReservas(),
-//        '/llegadas': (context) => LlegadasReservas(),
-//        '/Ocupacion': (context) => LlegadasReservas(),
-//        '/Analisis de Habitaciones': (context) => LlegadasReservas(),
-//        '/Bloqueo de Habitaciones': (context) => DatatableSample(),
-//        '/Preasignacion de Habitaciones': (context) => LlegadasDTReservas(),
-//        '/checkout': (context) => CheckoutReservas(),
-//        '/dashboard': (context) => Dashboard(),
+        "forminformes":(BuildContext context)=> new FormInformes(),
+        "reppedidosabiertos":(BuildContext context)=> new RepPedidosAbiertos(),
       },
+      home: new LoginVista(),
       title:'Tarjeta de Registro',
       theme: ThemeData(
         primarySwatch: Colors.indigo,

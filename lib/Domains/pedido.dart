@@ -13,6 +13,7 @@ class Pedido{
       int     vendedor_id;
       int     usrabrio_id;
       int     usrcerro_id;
+      int     usrcancelo_id;
       String  vendedornombre;
       String  areaentrega;
       String  usuario;
@@ -21,6 +22,8 @@ class Pedido{
       String hieleranombre;
       String status;
       double total;
+      String fechacancelado;
+      double totalpedido;
 
       Pedido(
           {
@@ -34,6 +37,7 @@ class Pedido{
             this.vendedor_id,
             this.usrabrio_id,
             this.usrcerro_id,
+            this.usrcancelo_id,
             this.vendedornombre,
             this.areaentrega,
             this.usuario,
@@ -41,7 +45,9 @@ class Pedido{
             this.hielera_id,
             this.hieleranombre,
             this.status,
-            this.total
+            this.total,
+            this.fechacancelado,
+            this.totalpedido,
       });
 
       factory Pedido.fromJson(Map<String, dynamic> parsedJson){
@@ -56,12 +62,15 @@ class Pedido{
                 vendedor_id: parsedJson['vendedor_id'],
                 usrabrio_id: parsedJson['usrabrio_id'],
                 usrcerro_id: parsedJson['usrcerro_id'],
+                usrcancelo_id: parsedJson['usrcancelo_id'],
                 vendedornombre: parsedJson['vendedornombre'],
                 areaentrega: parsedJson['areaentrega'],
                 usuario : parsedJson ['usuario'],
                 pedidosdetalle: parsedJson['pedidosdetalle'] != null ? Pedidos_detalles.fromJson( parsedJson['pedidosdetalle'] ).pedidosdetalle : null,
                 hielera_id: parsedJson['hielera_id'],
-                status: parsedJson['status']
+                status: parsedJson['status'],
+                fechacancelado : parsedJson['fechacancelado'],
+                 totalpedido:  parsedJson['totalpedido'],
             );
       }
 
@@ -95,16 +104,39 @@ class Pedido{
                   'vendedor_id': vendedor_id,
                   'usrabrio_id': usrabrio_id,
                   'usrcerro_id': usrcerro_id,
+                  'usrcancelo_id': usrcancelo_id,
                   'vendedornombre': vendedornombre,
                   'areaentrega':areaentrega,
                   'usuario': usuario,
                   'pedidosdetalle': pedidosdetalle,
                   'hielera_id': hielera_id,
-                  'status': status
+                  'status': status,
+                  'fechacancelado':fechacancelado,
+                  'totalpedido':totalpedido
         };
       }
 
-
+        String getIndex(int index) {
+          switch (index) {
+            case 0:
+              return id.toString();
+            case 1:
+              return fechapedido;
+            case 2:
+              return status;
+            case 3:
+              return clientenombre;
+            case 4:
+              return vendedornombre;
+            case 5:
+              return tipopedidodescripcion;
+            case 6:
+              return areaentrega;
+            case 7:
+              return totalpedido.toString();
+          }
+          return '';
+        }
 
 
 }

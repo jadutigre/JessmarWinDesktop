@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:jessmarwindesk/Vistas/ListaArticulos.dart';
 import 'package:jessmarwindesk/Vistas/ListaPedidos.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ListaClientes.dart';
 import 'ListaHieleras.dart';
@@ -16,6 +17,8 @@ class MenuPrincipal extends StatefulWidget {
 
 
 class _MenuPrincipalState extends State<MenuPrincipal> {
+
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   @override
   Widget build(BuildContext context) {
@@ -177,8 +180,12 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
                               ),
                             ),
                           ),
-                          onTap: (){
-                            //actionButtonRaised();
+                          onTap: () async {
+
+                            final SharedPreferences prefs = await _prefs;
+                            prefs.setString("filtros", "Abiertos");
+                            actionButtonInformes();
+
                           }
                       )
                   ),
@@ -345,27 +352,13 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
 
     Navigator.pushNamed(context, 'listapedidos');
 
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => ListaPedidos(),
-    //   ),
-    // );
+
 
   }
 
     Future<void> actionButtonArticulos() async {
 
       Navigator.pushNamed(context, 'listaarticulos');
-
-
-
-      // Navigator.pushAndRemoveUntil(
-      //     context,
-      //     MaterialPageRoute(builder: (BuildContext context) =>  ListaArticulos()),
-      //         (Route<dynamic> route) => false
-      // );
-
 
   }
 
@@ -374,11 +367,12 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
     Navigator.pushNamed(context, 'listaclientes');
 
 
-    // Navigator.pushAndRemoveUntil(
-    //     context,
-    //     MaterialPageRoute(builder: (BuildContext context) =>  ListaClientes()),
-    //         (Route<dynamic> route) => false
-    // );
+  }
+
+  Future<void> actionButtonInformes() async {
+
+    Navigator.pushNamed(context, 'forminformes');
+
 
   }
 
@@ -386,11 +380,6 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
 
     Navigator.pushNamed(context, 'listavendedores');
 
-    // Navigator.pushAndRemoveUntil(
-    //     context,
-    //     MaterialPageRoute(builder: (BuildContext context) =>  ListaVendedores()),
-    //         (Route<dynamic> route) => false
-    // );
 
   }
 
@@ -398,11 +387,7 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
 
     Navigator.pushNamed(context, 'listahieleras');
 
-    // Navigator.pushAndRemoveUntil(
-    //     context,
-    //     MaterialPageRoute(builder: (BuildContext context) =>  ListaHieleras()),
-    //         (Route<dynamic> route) => false
-    // );
+
 
   }
 

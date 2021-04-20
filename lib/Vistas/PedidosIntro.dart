@@ -139,12 +139,17 @@ class _PedidosIntroState extends State<PedidosIntro> {
     JessmarService service = JessmarService();
     Pedido pedido = await service.getOnePedido("1");
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context)  => PedidosManto( pedido: pedido ),
-      ),
-    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context)  => PedidosManto( pedido: pedido ),
+    //   ),
+    // );
+
+    Navigator.pushNamed(context, 'pedidosmanto',arguments: {'pedido': pedido});
+
+
+
   }
 
 

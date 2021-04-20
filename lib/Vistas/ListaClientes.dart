@@ -120,21 +120,22 @@ class _ListaClientesState extends State<ListaClientes> {
 
 
 
-              FloatingActionButton(
-                child: Icon(
-                    Icons.arrow_back
-                ),
-                onPressed:() {
+              // FloatingActionButton(
+              //   child: Icon(
+              //       Icons.arrow_back
+              //   ),
+              //   onPressed:() {
+              //
+              //     Navigator.pushAndRemoveUntil(
+              //         context,
+              //         MaterialPageRoute(builder: (BuildContext context) =>  MenuPrincipal()),
+              //             (Route<dynamic> route) => false
+              //     );
+              //
+              //   },
+              //   heroTag: null,
+              // ),
 
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (BuildContext context) =>  MenuPrincipal()),
-                          (Route<dynamic> route) => false
-                  );
-
-                },
-                heroTag: null,
-              ),
               SizedBox(
                 height: 10,
               ),

@@ -684,7 +684,6 @@ class _FormArticulosState extends State<FormArticulos> {
                   showEditIcon: true,
                   placeholder: true,
                   onTap: () {
-                    //Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosIntro( detalle: itemRow)));
                     editRecord(itemRow);
                   },
                 ),

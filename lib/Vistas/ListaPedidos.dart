@@ -6,6 +6,7 @@ import 'package:jessmarwindesk/Domains/pedido.dart';
 import 'package:jessmarwindesk/Domains/pedido_detalle.dart';
 import 'package:jessmarwindesk/Service/jessmarService.dart';
 import 'package:jessmarwindesk/Vistas/PedidosManto.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ListaPedidos  extends StatefulWidget {
   ListaPedidos({Key key}) : super(key: key);
@@ -16,7 +17,7 @@ class ListaPedidos  extends StatefulWidget {
 
 class _ListaPedidosState extends State<ListaPedidos> {
 
-
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   Future<List<Pedido>> fpedidos ;
   List<Pedido> pedidos ;
@@ -35,7 +36,7 @@ class _ListaPedidosState extends State<ListaPedidos> {
       print("Estoy Pasando Servicio Async ...");
       JessmarService service = JessmarService();
       setState(() {
-          fpedidos =  service.getListaPedidosFull();
+          fpedidos =  service.getListaPedidosFull("","","");
       });
   }
 
@@ -112,7 +113,7 @@ class _ListaPedidosState extends State<ListaPedidos> {
         ),
         floatingActionButton: new FloatingActionButton(
           child: new Icon(Icons.add),
-          onPressed: () {
+          onPressed: () async  {
 
             // TODO add your logic here to add stuff
             Pedido pedido = new Pedido();
@@ -124,7 +125,13 @@ class _ListaPedidosState extends State<ListaPedidos> {
             pedido.pedidosdetalle = List<Pedido_detalle>();
             pedido.usuario = "";
             pedido.areaentrega="";
-            Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosManto( pedido: pedido)));
+
+            final SharedPreferences prefs = await _prefs;
+            prefs.setInt("pedidoid", pedido.id);
+
+            Navigator.pushNamed(context, 'pedidosmanto');
+
+            //Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosManto( pedido: pedido)));
 
           },
         ),
@@ -174,8 +181,12 @@ class _ListaPedidosState extends State<ListaPedidos> {
               Text(itemRow.id.toString()),
               showEditIcon: true,
               placeholder: false,
-              onTap:() {
-              Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosManto( pedido: itemRow)));
+              onTap:() async {
+              //Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosManto( pedido: itemRow)));
+                final SharedPreferences prefs = await _prefs;
+                prefs.setInt("pedidoid", itemRow.id);
+              Navigator.pushNamed(context, 'pedidosmanto');
+
             },
             ),
             DataCell(
@@ -266,7 +277,7 @@ class _ListaPedidosState extends State<ListaPedidos> {
 //                      " Paquete: "
 //              ),
 //              isThreeLine: true,
-              onTap: (){
+              onTap: () async {
                 //print("Valor "+values[index].nombre);
                 // String url = 'http://10.194.18.59:8081/GroupSunsetPMSProxyServices/pms/dameReservacion';
                 // Future<Huespedes>makeRequest()async {
@@ -284,7 +295,10 @@ class _ListaPedidosState extends State<ListaPedidos> {
                 //   }
                 // }
                 //Navigator.push(context, new MaterialPageRoute(builder: (context) => DetailPage(values[index])));
-                Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosManto( pedido: values[index])));
+                //Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosManto( pedido: values[index])));
+                final SharedPreferences prefs = await _prefs;
+                prefs.setInt("pedidoid", values[index].id);
+                Navigator.pushNamed(context, 'pedidosmanto');
               },
             ),
             new Divider(height: 2.0,),

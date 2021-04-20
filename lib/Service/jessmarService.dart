@@ -45,7 +45,7 @@ class JessmarService{
     //Map<String, dynamic>  body = {'nohotel': nohotel};
 
     Response response = await post(
-        uri,
+        Uri.parse(uri),
         headers: headers
     );
 
@@ -72,7 +72,7 @@ class JessmarService{
     //Map<String, dynamic>  body = {'nohotel': nohotel};
 
     Response response = await post(
-        uri,
+        Uri.parse(uri),
         headers: headers
     );
 
@@ -98,7 +98,7 @@ class JessmarService{
     //Map<String, dynamic>  body = {'nohotel': nohotel};
 
     Response response = await post(
-        uri,
+        Uri.parse(uri),
         headers: headers
     );
 
@@ -115,10 +115,10 @@ class JessmarService{
 
 
 
-  Future<List<Pedido>> getListaPedidosFull() async {
+  Future<List<Pedido>> getListaPedidosFull(String status,String finicial,String ffinal) async {
     print("getListaPedidos");
 
-    List<Pedido> pedidos;
+    List<Pedido> pedidos = new List.empty();
 
     String uri = url+'/getListaPedidosFull';
     Map<String, String> headers = {
@@ -126,20 +126,24 @@ class JessmarService{
       "Accept": "application/json"
     };
 
-    //Map<String, dynamic>  body = {'nohotel': nohotel};
+    Map<String, dynamic>  body = {'status': status,'finicial':finicial,'ffinal':ffinal};
 
     Response response = await post(
-        uri,
-        headers: headers
+        Uri.parse(uri),
+        headers: headers,
+      body: body
     );
 
     String responseBody = utf8.decode(response.bodyBytes);
 
     if( responseBody!=null && responseBody.length!=0 ){
       var json = jsonDecode(responseBody)['payload'];
-      pedidos = Pedidos
+
+      if(json!=null)
+           pedidos = Pedidos
           .fromJson(json)
           .pedido;
+
       //print(json);
     }
 
@@ -162,7 +166,7 @@ class JessmarService{
     //Map<String, dynamic>  body = {'nohotel': nohotel};
 
     Response response = await post(
-        uri,
+        Uri.parse(uri),
         headers: headers
     );
 
@@ -196,7 +200,7 @@ class JessmarService{
     Map<String, dynamic>  body = {'id': id};
 
     Response response = await post(
-        uri,
+        Uri.parse(uri),
         headers: headers,
         body : body
     );
@@ -233,7 +237,7 @@ class JessmarService{
     Map<String, dynamic>  body = {'id': id};
 
     Response response = await post(
-        uri,
+        Uri.parse(uri),
         headers: headers,
         body : body
     );
@@ -264,7 +268,7 @@ class JessmarService{
     //Map<String, dynamic>  body = {'nohotel': nohotel};
 
     Response response = await post(
-        uri,
+        Uri.parse(uri),
         headers: headers
     );
 
@@ -290,7 +294,7 @@ class JessmarService{
     //Map<String, dynamic>  body = {'nohotel': nohotel};
 
     Response response = await post(
-        uri,
+        Uri.parse(uri),
         headers: headers
     );
 
@@ -316,7 +320,7 @@ class JessmarService{
     //Map<String, dynamic>  body = {'nohotel': nohotel};
 
     Response response = await post(
-        uri,
+        Uri.parse(uri),
         headers: headers
     );
 
@@ -344,7 +348,7 @@ class JessmarService{
     //Map<String, dynamic>  body = {'nohotel': nohotel};
 
     Response response = await post(
-        uri,
+        Uri.parse(uri),
         headers: headers
     );
 
@@ -370,7 +374,7 @@ class JessmarService{
     //Map<String, dynamic>  body = {'nohotel': nohotel};
 
     Response response = await post(
-        uri,
+        Uri.parse(uri),
         headers: headers
     );
 
@@ -401,7 +405,7 @@ class JessmarService{
     //Map<String, dynamic>  body = {'nohotel': nohotel};
 
     Response response = await post(
-        uri,
+        Uri.parse(uri),
         headers: headers
     );
 
@@ -427,7 +431,7 @@ class JessmarService{
     //Map<String, dynamic>  body = {'nohotel': nohotel};
 
     Response response = await post(
-        uri,
+        Uri.parse(uri),
         headers: headers
     );
 
@@ -455,7 +459,7 @@ class JessmarService{
     Map<String, dynamic>  body = {'idusuario': idusuario};
 
     Response response = await post(
-        uri,
+        Uri.parse(uri),
         headers: headers,
         body: body
     );
@@ -494,7 +498,7 @@ class JessmarService{
         Map<String, dynamic>  body = {'id': id};
 
         Response response = await post(
-            uri,
+            Uri.parse(uri),
             headers: headers,
             body: body
         );
@@ -530,7 +534,7 @@ class JessmarService{
       Map<String, dynamic>  body = {'id': id};
 
       Response response = await post(
-          uri,
+          Uri.parse(uri),
           headers: headers,
           body: body
       );
@@ -569,7 +573,7 @@ class JessmarService{
       Map<String, dynamic>  body = {'id': id};
 
       Response response = await post(
-          uri,
+          Uri.parse(uri),
           headers: headers,
           body: body
       );
@@ -605,7 +609,7 @@ class JessmarService{
       Map<String, dynamic>  body = {'id': id};
 
       Response response = await post(
-          uri,
+          Uri.parse(uri),
           headers: headers,
           body: body
       );
@@ -642,7 +646,7 @@ class JessmarService{
       Map<String, dynamic>  body = {'id': id};
 
       Response response = await post(
-          uri,
+          Uri.parse(uri),
           headers: headers,
           body: body
       );
@@ -686,7 +690,7 @@ class JessmarService{
       Map<String, dynamic>  body = {'json': json};
 
       Response response = await post(
-          uri,
+          Uri.parse(uri),
           headers: headers,
           body: body
       );
@@ -725,7 +729,7 @@ class JessmarService{
       Map<String, dynamic>  body = {'json': json};
 
       Response response = await post(
-          uri,
+          Uri.parse(uri),
           headers: headers,
           body: body
       );
@@ -764,7 +768,7 @@ class JessmarService{
       Map<String, dynamic>  body = {'json': json};
 
       Response response = await post(
-          uri,
+          Uri.parse(uri),
           headers: headers,
           body: body
       );
@@ -803,7 +807,7 @@ class JessmarService{
       Map<String, dynamic>  body = {'json': json};
 
       Response response = await post(
-          uri,
+          Uri.parse(uri),
           headers: headers,
           body: body
       );
@@ -841,7 +845,7 @@ class JessmarService{
       Map<String, dynamic>  body = {'json': json};
 
       Response response = await post(
-          uri,
+          Uri.parse(uri),
           headers: headers,
           body: body
       );
@@ -880,7 +884,7 @@ class JessmarService{
             Map<String, dynamic>  body = {'json': json};
 
             Response response = await post(
-                uri,
+                Uri.parse(uri),
                 headers: headers,
                 body: body
             );

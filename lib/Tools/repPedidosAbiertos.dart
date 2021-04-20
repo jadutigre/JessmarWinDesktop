@@ -1,27 +1,84 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jessmarwindesk/Domains/pedido.dart';
+import 'package:jessmarwindesk/Domains/pedido_detalle.dart';
+import 'package:jessmarwindesk/Domains/pedidos_detalles.dart';
+import 'package:jessmarwindesk/Service/jessmarService.dart';
 import 'package:jessmarwindesk/Vistas/ListaPedidos.dart';
 import 'package:intl/intl.dart';
+import 'package:jessmarwindesk/Vistas/formInformes.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:shared_preferences/shared_preferences.dart';
 
-class PdfPrevio extends StatefulWidget  {
-  Pedido pedido;
-   PdfPrevio({Key key, @required this.pedido}) : super(key: key);
-  _PdfPrevioState createState() => _PdfPrevioState();
+class RepPedidosAbiertos extends StatefulWidget  {
+  RepPedidosAbiertos({Key key}) : super(key: key);
+  _RepPedidosAbiertosState createState() => _RepPedidosAbiertosState();
 }
 
+class _RepPedidosAbiertosState extends State<RepPedidosAbiertos> {
+
+  JessmarService service = JessmarService();
+  Future<Map<String,dynamic>> datos;
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  String menuhorizontalselectoption;
+  String finicial;
+  String ffinal;
+
+  Future<List<Pedido>> fpedidos ;
+  List<Pedido> pedidos ;
+
+  double totalpedidos;
+
+  @override
+  void initState() {
+    super.initState();
+    datos = _getData();
+  }
 
 
-class _PdfPrevioState extends State<PdfPrevio> {
+
+  Future<Map<String,dynamic>> _getData() async {
+
+    JessmarService service = JessmarService();
+    Map<String,dynamic> datos = new Map();
+
+    final SharedPreferences prefs = await _prefs;
+    menuhorizontalselectoption = prefs.getString('filtros');
+    finicial = prefs.getString("finicial");
+    ffinal = prefs.getString("ffinal");
+
+    // Pedido pedido = new Pedido();
+    // Pedido onepedido = new Pedido();
+    // print("Servicio  _getData");
+
+    // pedidos  = json.decode(prefs.getString('pedidos'));
+    //
+    // datos["listapedido"]= pedidos;
+
+    return datos;
+
+  }
 
 
   @override
   Widget build(BuildContext context) {
-    Pedido elpedido = widget.pedido;
+
+    final Map arguments = ModalRoute.of(context).settings.arguments as Map;
+
+    List<Pedido> pedidos;
+
+    if (arguments != null){
+       pedidos =   arguments['pedidos'];
+    }
+
+    //pedidos = widget.pedidos;
+    totalpedidos =  _sumalistatotal(pedidos);
+    print(totalpedidos);
 
     const tableHeaders = [
       'ID#',
@@ -34,7 +91,7 @@ class _PdfPrevioState extends State<PdfPrevio> {
     //pw.PageTheme _buildTheme(PdfPageFormat pageFormat, pw.Font base,  pw.Font bold, pw.Font italic)
     pw.PageTheme _buildTheme(PdfPageFormat pageFormat) {
       return pw.PageTheme(
-        pageFormat: PdfPageFormat(8 * PdfPageFormat.cm, 30 * PdfPageFormat.cm, marginAll: 0.5 * PdfPageFormat.cm), //pageFormat,
+        pageFormat: pageFormat,
         // theme: pw.ThemeData.withFont(
         //   base: base,
         //   bold: bold,
@@ -54,7 +111,19 @@ class _PdfPrevioState extends State<PdfPrevio> {
           pw.Row(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
+
+
               pw.Expanded(
+                  flex: 1,
+                  child: pw.Column(
+                    children: [
+                    ],
+                  ),
+              ),
+
+
+              pw.Expanded(
+                flex: 2,
                 child: pw.Column(
                   children: [
 
@@ -62,9 +131,9 @@ class _PdfPrevioState extends State<PdfPrevio> {
                     pw.Container(
                       height: 20,
                       padding: const pw.EdgeInsets.only(left: 8),
-                      alignment: pw.Alignment.centerLeft,
+                      alignment: pw.Alignment.center,
                       child: pw.Text(
-                        'REMISION',
+                        'REPORTE DE PEDIDOS '+menuhorizontalselectoption.toUpperCase(),
                         style: pw.TextStyle(
                           //color:  PdfColors.cyan900,
                           fontWeight: pw.FontWeight.bold,
@@ -90,184 +159,198 @@ class _PdfPrevioState extends State<PdfPrevio> {
                           fontSize: 7,
                         ),
                         child: pw.GridView(
-                          crossAxisCount: 2,
+                          crossAxisCount: 5,
                           children: [
-                            pw.Text('Cliente '),
-                            pw.Text(elpedido.clientenombre ?? ' '),
+                            pw.Text('Fecha Inicial : '),
+                            pw.Text( finicial),
+                            pw.Text(' '),
+                            pw.Text('Fecha Final : '),
+                            pw.Text( ffinal),
                           ],
                         ),
                       ),
                     ),
 
+                    pw.SizedBox(height: 20),
+                    // pw.Container(
+                    //   decoration: pw.BoxDecoration(
+                    //     borderRadius:
+                    //     const pw.BorderRadius.all(pw.Radius.circular(2)),
+                    //     //color: PdfColors.blueGrey900,
+                    //   ),
+                    //   padding: const pw.EdgeInsets.only(left: 8, top: 10, bottom: 10, right: 20),
+                    //   alignment: pw.Alignment.centerLeft,
+                    //   height: 30,
+                    //   child: pw.DefaultTextStyle(
+                    //     style: pw.TextStyle(
+                    //       //color: _accentTextColor,
+                    //       fontSize: 7,
+                    //     ),
+                    //     child: pw.GridView(
+                    //       crossAxisCount: 2,
+                    //       children: [
+                    //         pw.Text('Invoice #'),
+                    //         pw.Text( 'Invoice'),
+                    //
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
 
-                    pw.Container(
-                      decoration: pw.BoxDecoration(
-                        borderRadius:
-                        const pw.BorderRadius.all(pw.Radius.circular(2)),
-                        //color: PdfColors.blueGrey900,
-                      ),
-                      padding: const pw.EdgeInsets.only(left: 8, top: 10, bottom: 10, right: 20),
-                      alignment: pw.Alignment.centerLeft,
-                      height: 30,
-                      child: pw.DefaultTextStyle(
-                        style: pw.TextStyle(
-                          //color: _accentTextColor,
-                          fontSize: 7,
-                        ),
-                        child: pw.GridView(
-                          crossAxisCount: 2,
-                          children: [
-                            pw.Text('Invoice #'),
-                            pw.Text(elpedido.id.toString()),
-
-                          ],
-                        ),
-                      ),
-                    ),
 
 
+                    // pw.Container(
+                    //   decoration: pw.BoxDecoration(
+                    //     borderRadius:
+                    //     const pw.BorderRadius.all(pw.Radius.circular(2)),
+                    //      //color: PdfColors.blueGrey900,
+                    //   ),
+                    //   padding: const pw.EdgeInsets.only(left: 8, top: 10, bottom: 10, right: 20),
+                    //   alignment: pw.Alignment.centerLeft,
+                    //   height: 30,
+                    //   child: pw.DefaultTextStyle(
+                    //     style: pw.TextStyle(
+                    //       //color: _accentTextColor,
+                    //       fontSize: 7,
+                    //     ),
+                    //     child: pw.GridView(
+                    //
+                    //       crossAxisCount: 4,
+                    //       children: [
+                    //         pw.Text('Date:'),
+                    //         //pw.Text(elpedido.fechapedido),
+                    //         // pw.Text('Invoice #'),
+                    //         // pw.Text(elpedido.id.toString()),
+                    //         // pw.Text('Date:'),
+                    //         // pw.Text(elpedido.fechapedido),
+                    //
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
 
-                    pw.Container(
-                      decoration: pw.BoxDecoration(
-                        borderRadius:
-                        const pw.BorderRadius.all(pw.Radius.circular(2)),
-                         //color: PdfColors.blueGrey900,
-                      ),
-                      padding: const pw.EdgeInsets.only(left: 8, top: 10, bottom: 10, right: 20),
-                      alignment: pw.Alignment.centerLeft,
-                      height: 30,
-                      child: pw.DefaultTextStyle(
-                        style: pw.TextStyle(
-                          //color: _accentTextColor,
-                          fontSize: 7,
-                        ),
-                        child: pw.GridView(
-
-                          crossAxisCount: 4,
-                          children: [
-                            pw.Text('Date:'),
-                            pw.Text(elpedido.fechapedido),
-                            // pw.Text('Invoice #'),
-                            // pw.Text(elpedido.id.toString()),
-                            // pw.Text('Date:'),
-                            // pw.Text(elpedido.fechapedido),
-
-                          ],
-                        ),
-                      ),
-                    ),
 
                   ],
                 ),
               ),
 
 
+
               pw.Expanded(
+                flex: 1,
                 child: pw.Column(
-                  mainAxisSize: pw.MainAxisSize.min,
                   children: [
+                  ],
+                ),
+              ),
 
 
-                    pw.Container(
-                      decoration: pw.BoxDecoration(
-                        borderRadius:
-                        const pw.BorderRadius.all(pw.Radius.circular(2)),
-                        //color: PdfColors.blueGrey900,
-                      ),
-                      padding: const pw.EdgeInsets.only(left: 8, top: 10, bottom: 10, right: 20),
-                      alignment: pw.Alignment.centerLeft,
-                      height: 30,
-                      child: pw.DefaultTextStyle(
-                        style: pw.TextStyle(
-                          //color: _accentTextColor,
-                          fontSize: 7,
-                        ),
-                        child: pw.GridView(
-
-                          crossAxisCount: 2,
-                          children: [
-                            pw.Text('')
-                          ],
-                        ),
-                      ),
-                    ),
-
-
-                    pw.Container(
-                      decoration: pw.BoxDecoration(
-                        borderRadius:
-                        const pw.BorderRadius.all(pw.Radius.circular(2)),
-                        //color: PdfColors.blueGrey900,
-                      ),
-                      padding: const pw.EdgeInsets.only(left: 8, top: 10, bottom: 10, right: 20),
-                      alignment: pw.Alignment.centerLeft,
-                      height: 30,
-                      child: pw.DefaultTextStyle(
-                        style: pw.TextStyle(
-                          //color: _accentTextColor,
-                          fontSize: 7,
-                        ),
-                        child: pw.GridView(
-
-                          crossAxisCount: 2,
-                          children: [
-                            pw.Text('Vendedor'),
-                            pw.Text(elpedido.vendedornombre),
-                          ],
-                        ),
-                      ),
-                    ),
-
-
-                    pw.Container(
-                      decoration: pw.BoxDecoration(
-                        borderRadius:
-                        const pw.BorderRadius.all(pw.Radius.circular(2)),
-                        //color: PdfColors.blueGrey900,
-                      ),
-                      padding: const pw.EdgeInsets.only(left: 8, top: 10, bottom: 10, right: 20),
-                      alignment: pw.Alignment.centerLeft,
-                      height: 30,
-                      child: pw.DefaultTextStyle(
-                        style: pw.TextStyle(
-                          //color: _accentTextColor,
-                          fontSize: 7,
-                        ),
-                        child: pw.GridView(
-                          crossAxisCount: 2,
-                          children: [
-                            pw.Text('Hielera'),
-                            pw.Text(elpedido.hieleranombre),
-                          ],
-                        ),
-                      ),
-                    ),
+              // pw.Expanded(
+              //   child: pw.Column(
+              //     mainAxisSize: pw.MainAxisSize.min,
+              //     children: [
+              //
+              //
+              //       pw.Container(
+              //         decoration: pw.BoxDecoration(
+              //           borderRadius:
+              //           const pw.BorderRadius.all(pw.Radius.circular(2)),
+              //           //color: PdfColors.blueGrey900,
+              //         ),
+              //         padding: const pw.EdgeInsets.only(left: 8, top: 10, bottom: 10, right: 20),
+              //         alignment: pw.Alignment.centerLeft,
+              //         height: 30,
+              //         child: pw.DefaultTextStyle(
+              //           style: pw.TextStyle(
+              //             //color: _accentTextColor,
+              //             fontSize: 7,
+              //           ),
+              //           child: pw.GridView(
+              //
+              //             crossAxisCount: 2,
+              //             children: [
+              //               pw.Text('')
+              //             ],
+              //           ),
+              //         ),
+              //       ),
+              //
+              //
+              //       pw.Container(
+              //         decoration: pw.BoxDecoration(
+              //           borderRadius:
+              //           const pw.BorderRadius.all(pw.Radius.circular(2)),
+              //           //color: PdfColors.blueGrey900,
+              //         ),
+              //         padding: const pw.EdgeInsets.only(left: 8, top: 10, bottom: 10, right: 20),
+              //         alignment: pw.Alignment.centerLeft,
+              //         height: 30,
+              //         child: pw.DefaultTextStyle(
+              //           style: pw.TextStyle(
+              //             //color: _accentTextColor,
+              //             fontSize: 7,
+              //           ),
+              //           child: pw.GridView(
+              //
+              //             crossAxisCount: 2,
+              //             children: [
+              //               pw.Text('Vendedor'),
+              //               //pw.Text(pedidos[i].clientenombre),
+              //             ],
+              //           ),
+              //         ),
+              //       ),
 
 
-                    pw.Container(
-                              decoration: pw.BoxDecoration(
-                                borderRadius:
-                                const pw.BorderRadius.all(pw.Radius.circular(2)),
-                                //color: PdfColors.blueGrey900,
-                              ),
-                              padding: const pw.EdgeInsets.only(left: 8, top: 10, bottom: 10, right: 20),
-                              alignment: pw.Alignment.centerLeft,
-                              height: 30,
-                              child: pw.DefaultTextStyle(
-                                style: pw.TextStyle(
-                                  //color: _accentTextColor,
-                                  fontSize: 7,
-                                ),
-                                child: pw.GridView(
+                    // pw.Container(
+                    //   decoration: pw.BoxDecoration(
+                    //     borderRadius:
+                    //     const pw.BorderRadius.all(pw.Radius.circular(2)),
+                    //     //color: PdfColors.blueGrey900,
+                    //   ),
+                    //   padding: const pw.EdgeInsets.only(left: 8, top: 10, bottom: 10, right: 20),
+                    //   alignment: pw.Alignment.centerLeft,
+                    //   height: 30,
+                    //   child: pw.DefaultTextStyle(
+                    //     style: pw.TextStyle(
+                    //       //color: _accentTextColor,
+                    //       fontSize: 7,
+                    //     ),
+                    //     child: pw.GridView(
+                    //       crossAxisCount: 2,
+                    //       children: [
+                    //         pw.Text('Hielera'),
+                    //        // pw.Text(elpedido.hieleranombre),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
 
-                                  crossAxisCount: 2,
-                                  children: [
-                                    pw.Text('Entregar:'),
-                                    pw.Text(elpedido.areaentrega),
-                                  ],
-                                ),
-                              ),
-                            ),
+
+                    // pw.Container(
+                    //           decoration: pw.BoxDecoration(
+                    //             borderRadius:
+                    //             const pw.BorderRadius.all(pw.Radius.circular(2)),
+                    //             //color: PdfColors.blueGrey900,
+                    //           ),
+                    //           padding: const pw.EdgeInsets.only(left: 8, top: 10, bottom: 10, right: 20),
+                    //           alignment: pw.Alignment.centerLeft,
+                    //           height: 30,
+                    //           child: pw.DefaultTextStyle(
+                    //             style: pw.TextStyle(
+                    //               //color: _accentTextColor,
+                    //               fontSize: 7,
+                    //             ),
+                    //             child: pw.GridView(
+                    //
+                    //               crossAxisCount: 2,
+                    //               children: [
+                    //                 pw.Text('Entregar:'),
+                    //                 //pw.Text(pedidos[row].clientenombre),
+                    //               ],
+                    //             ),
+                    //           ),
+                    //         ),
 
 
 
@@ -283,9 +366,12 @@ class _PdfPrevioState extends State<PdfPrevio> {
                     //   color: baseColor,
                     //   padding: pw.EdgeInsets.only(top: 3),
                     // ),
-                  ],
-                ),
-              ),
+              //     ],
+              //   ),
+              // ),
+
+
+
             ],
           ),
           if (context.pageNumber > 1) pw.SizedBox(height: 20)
@@ -464,7 +550,7 @@ class _PdfPrevioState extends State<PdfPrevio> {
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
                       pw.Text('Sub Total:'),
-                      pw.Text(_formatCurrency(elpedido.total)),
+                      pw.Text(_formatCurrency(totalpedidos.toDouble())),
                     ],
                   ),
 
@@ -490,7 +576,7 @@ class _PdfPrevioState extends State<PdfPrevio> {
                       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                       children: [
                         pw.Text('Total:'),
-                        pw.Text(_formatCurrency(elpedido.total)),
+                        pw.Text(_formatCurrency(totalpedidos.toDouble())),
                       ],
                     ),
                   ),
@@ -509,10 +595,13 @@ class _PdfPrevioState extends State<PdfPrevio> {
 
     pw.Widget _contentTable(pw.Context context) {
       const tableHeaders = [
-        'Codigo',
-        'Descripcion',
-        'Precio',
-        'Cantidad',
+        '#Pedido',
+        'Fecha',
+        'Estatus',
+        'Cliente',
+        'Vendedor',
+        'Tipo Pedido',
+        'Area Entrega',
         'Total'
       ];
 
@@ -528,9 +617,12 @@ class _PdfPrevioState extends State<PdfPrevio> {
         cellAlignments: {
           0: pw.Alignment.centerLeft,
           1: pw.Alignment.centerLeft,
-          2: pw.Alignment.centerRight,
-          3: pw.Alignment.center,
+          2: pw.Alignment.centerLeft,
+          3: pw.Alignment.centerLeft,
           4: pw.Alignment.centerLeft,
+          5: pw.Alignment.centerLeft,
+          6: pw.Alignment.centerLeft,
+          7: pw.Alignment.centerRight,
         },
         headerStyle: pw.TextStyle(
           //color: _baseTextColor,
@@ -554,16 +646,14 @@ class _PdfPrevioState extends State<PdfPrevio> {
               (col) => tableHeaders[col],
         ),
         data: List<List<String>>.generate(
-          elpedido.pedidosdetalle.length,
+          pedidos.length,
               (row) => List<String>.generate(
-            tableHeaders.length,
-                (col) => elpedido.pedidosdetalle[row].getIndex(col),
+                 tableHeaders.length,
+                (col) => pedidos[row].getIndex(col),
           ),
         ),
       );
     }
-
-
 
 
 
@@ -675,6 +765,7 @@ class _PdfPrevioState extends State<PdfPrevio> {
     return new Scaffold(
       // home:
       //   Scaffold(
+      extendBodyBehindAppBar: true,
         appBar: AppBar(title: Text("Impresion de Ticket")),
 
 
@@ -691,27 +782,27 @@ class _PdfPrevioState extends State<PdfPrevio> {
           children: <Widget>[
 
 
-                Expanded(
-                flex: 1, // 60%
-                child:
-                    Container(
-                      color: Colors.blue,
-                      child: Row(
-
-                      children: [
-                              RaisedButton(
-                                onPressed: actionButtonRaised,
-                                child:Row(
-                                  children: <Widget>[
-                                    Text('Lista Pedidos'),
-                                    Icon(Icons.arrow_forward_ios),
-                                  ],
-                                ),
-                              ),
-                        ]
-                       ),
-                    )
-                ),
+                // Expanded(
+                // flex: 1, // 60%
+                // child:
+                //     Container(
+                //       color: Colors.blue,
+                //       child: Row(
+                //
+                //       children: [
+                //               RaisedButton(
+                //                 onPressed: actionButtonRaised,
+                //                 child:Row(
+                //                   children: <Widget>[
+                //                     Text('Lista Pedidos'),
+                //                     Icon(Icons.arrow_forward_ios),
+                //                   ],
+                //                 ),
+                //               ),
+                //         ]
+                //        ),
+                //     )
+                // ),
 
                 Expanded(
                     flex: 6, // 60%
@@ -734,12 +825,14 @@ class _PdfPrevioState extends State<PdfPrevio> {
 
   Future<void> actionButtonRaised() {
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ListaPedidos(),
-      ),
-    );
+    // Navigator.pushReplacement(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => FormInformes(),
+    //   ),
+    // );
+
+    Navigator.pushNamed(context, 'forminformes');
 
   }
 
@@ -750,6 +843,14 @@ class _PdfPrevioState extends State<PdfPrevio> {
   String _formatDate(DateTime date) {
     final format = DateFormat.yMMMd('en_US');
     return format.format(date);
+  }
+
+  double _sumalistatotal(List<Pedido> _pedido){
+       totalpedidos=0.0;
+       for(var i = 0; i< _pedido.length; i++) {
+              totalpedidos = totalpedidos + _pedido[i].totalpedido;
+       }
+       return totalpedidos;
   }
 
 

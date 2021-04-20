@@ -162,13 +162,6 @@ class _MyAppState extends State<LoginVista> {
 
     Navigator.pushNamed(context, 'menuprincipal');
 
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //    builder: (context) => MenuPrincipal(),
-    //   ),
-    // );
-
   }
 
 

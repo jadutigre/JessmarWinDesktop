@@ -335,7 +335,8 @@ class _ListaArticulosState extends State<ListaArticulos> {
                 //   }
                 // }
                 //Navigator.push(context, new MaterialPageRoute(builder: (context) => DetailPage(values[index])));
-                Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosManto( pedido: values[index])));
+                //Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosManto( pedido: values[index])));
+                Navigator.pushNamed(context, 'pedidosmanto',arguments: {'pedido': values[index]});
               },
             ),
             new Divider(height: 2.0,),

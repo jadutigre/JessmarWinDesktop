@@ -33,8 +33,7 @@ import 'package:simple_autocomplete_formfield/simple_autocomplete_formfield.dart
 import 'ListaPedidos.dart';
 
 class PedidosManto extends StatefulWidget {
-  Pedido pedido;
-  PedidosManto({Key key, @required this.pedido}) : super(key: key);
+  PedidosManto({Key key}) : super(key: key);
 
   _PedidosMantoState createState() => _PedidosMantoState();
 }
@@ -124,6 +123,8 @@ class _PedidosMantoState extends State<PedidosManto> {
   Item selectedUser;
   double eltotal;
 
+  Pedido pedido;
+
 //  List<Item> users = <Item>[
 //    const Item('Android',Icon(Icons.android,color:  const Color(0xFF167F67),)),
 //    const Item('Flutter',Icon(Icons.flag,color:  const Color(0xFF167F67),)),
@@ -166,13 +167,24 @@ class _PedidosMantoState extends State<PedidosManto> {
 
 
   Future<Map<String, dynamic>> _getData() async {
-    Pedido pedido = widget.pedido;
-    print("Servicio  _getData");
 
-    if (pedido.id == 0) {
+    // final Map arguments = ModalRoute.of(context).settings.arguments as Map;
+    // if (arguments != null){
+    //   pedido =   arguments['pedido'];
+    //   print(pedido);
+    // }
+
+    final SharedPreferences prefs = await _prefs;
+    var pedidoid =prefs.getInt("pedidoid");
+
+    print("Servicio  _getData");
+    print(pedido);
+
+    if (pedidoid == 0) {
+        newPedido();
         onepedido = pedido;
     } else {
-        onepedido = await service.getOnePedido(pedido.id.toString());
+        onepedido = await service.getOnePedido(pedidoid.toString());
         var values = onepedido.pedidosdetalle;
         var itvalues = values.iterator;
         eltotal = 0.0;
@@ -204,6 +216,7 @@ class _PedidosMantoState extends State<PedidosManto> {
       }
     }
 
+
     fvendedores = service.getListaVendedores();
     lvendedores = await fvendedores;
     var it1 = lvendedores.iterator;
@@ -215,7 +228,6 @@ class _PedidosMantoState extends State<PedidosManto> {
         break;
       }
     }
-
 
     fhieleras = service.getListaHieleras();
     lhieleras = await fhieleras;
@@ -229,14 +241,11 @@ class _PedidosMantoState extends State<PedidosManto> {
       // }
     }
 
-
-    fprecios =
-        service.getListaPreciosByIdCliente(this._currentcliente.id.toString());
+    fprecios = service.getListaPreciosByIdCliente(this._currentcliente.id.toString());
     lprecios = await fprecios;
     _currentprecio = lprecios[0];
     _cantidadController.text = "1";
     _precioController.text = _currentprecio.precio.toString();
-
 
     Map<String, dynamic> datos = new Map();
 
@@ -248,6 +257,17 @@ class _PedidosMantoState extends State<PedidosManto> {
     datos["fvendedores"] = fvendedores;
 
     return datos;
+  }
+
+  newPedido(){
+    pedido.id=0;
+    pedido.fechapedido= DateTime.now().toString();
+    pedido.clientes_id = 1;
+    pedido.vendedor_id = 1;
+    pedido.tipopedido_id = 1;
+    pedido.pedidosdetalle = List<Pedido_detalle>();
+    pedido.usuario = "";
+    pedido.areaentrega="";
   }
 
   Future<DateTime> getDate() {
@@ -271,6 +291,10 @@ class _PedidosMantoState extends State<PedidosManto> {
 
   @override
   Widget build(BuildContext context) {
+
+
+
+
     var futureBuilder = new FutureBuilder(
         future: datos,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -316,13 +340,17 @@ class _PedidosMantoState extends State<PedidosManto> {
                             new Flexible(
                               child: Padding(
                                 padding: const EdgeInsets.all(5.0),
-                                child: new FutureBuilder(
+                                child:
+
+                                new FutureBuilder(
                                     future: fclientes,
                                     builder: (BuildContext context,
                                         AsyncSnapshot<List<Cliente>> snapshot) {
                                       if (!snapshot.hasData)
                                         return CircularProgressIndicator();
-                                      return DropdownButtonFormField<Cliente>(
+                                      return
+
+                                        DropdownButtonFormField<Cliente>(
                                         decoration: InputDecoration(
 //                                    prefixIcon: Icon(Icons.lock),
                                           labelText: "Cliente",
@@ -344,10 +372,7 @@ class _PedidosMantoState extends State<PedidosManto> {
                                             this._currentcliente = newValue
                                           }
                                           );
-                                          fprecios = service
-                                              .getListaPreciosByIdCliente(
-                                              this._currentcliente.id
-                                                  .toString());
+                                          fprecios = service.getListaPreciosByIdCliente(this._currentcliente.id.toString());
                                           lprecios = await fprecios;
                                           _currentprecio = lprecios[0];
                                           _cantidadController.text = '1';
@@ -356,7 +381,10 @@ class _PedidosMantoState extends State<PedidosManto> {
                                                   .toString();
                                         },
                                       );
+
+
                                     }),
+
                               ),
                             ),
 
@@ -1070,6 +1098,24 @@ class _PedidosMantoState extends State<PedidosManto> {
               FloatingActionButton(
 
                 child: Icon(
+                    Icons.cancel,
+                ),
+                onPressed: () async {
+                  await cancelaPedido();
+                  //newRecord();
+                  actionButtonRaised();
+                },
+                heroTag: null,
+                tooltip: "Cancelar el Pedido",
+              ),
+
+              SizedBox(
+                height: 5,
+              ),
+
+              FloatingActionButton(
+
+                child: Icon(
                     Icons.send_to_mobile
                 ),
                 onPressed: () {
@@ -1349,12 +1395,12 @@ class _PedidosMantoState extends State<PedidosManto> {
     pedido.hielera_id = _currenthielera.id;
     pedido.hieleranombre = _currenthielera.descripcion;
 
-    pedido.usrabrio_id = widget.pedido.usrabrio_id;
+    pedido.usrabrio_id = pedido.usrabrio_id;
     pedido.usrcerro_id = prefs.getInt("usuario_id");
     pedido.status = 'cerrado';
     final f = new DateFormat('yyyy-MM-dd hh:mm');
     pedido.fechapedido = f.format(
-        new DateFormat("yyyy-MM-dd hh:mm").parse(widget.pedido.fechapedido));
+        new DateFormat("yyyy-MM-dd hh:mm").parse(pedido.fechapedido));
     pedido.fechacierre = f.format(DateTime.now());
     pedido.areaentrega = _areaEntregaController.text;
     pedido.usuario = prefs.getString("usuario_clave");
@@ -1378,6 +1424,57 @@ class _PedidosMantoState extends State<PedidosManto> {
     return pedido;
 
   }
+
+
+  Future<Pedido>  cancelaPedido() async {
+
+    final SharedPreferences prefs = await _prefs;
+    prefs.getInt("usuario_id");
+    prefs.getString("usuario_nombre");
+
+    Pedido pedido = new Pedido();
+    pedido.id = int.parse(_numberpedidoController.text);
+    pedido.tipopedido_id = 1;
+
+    pedido.clientes_id = _currentcliente.id;
+    pedido.clientenombre = _currentcliente.nombre;
+
+    // pedido.hielera_id = _currenthielera.id;
+    // pedido.hieleranombre = _currenthielera.descripcion;
+
+    pedido.usrabrio_id = pedido.usrabrio_id;
+    pedido.usrcancelo_id = prefs.getInt("usuario_id");
+    pedido.status = 'cancelado';
+    final f = new DateFormat('yyyy-MM-dd hh:mm');
+    pedido.fechapedido = f.format(
+        new DateFormat("yyyy-MM-dd hh:mm").parse(pedido.fechapedido));
+    pedido.fechacancelado = f.format(DateTime.now());
+    pedido.areaentrega = _areaEntregaController.text;
+    pedido.usuario = prefs.getString("usuario_clave");
+
+    pedido.pedidosdetalle = values;
+    var itvalues = values.iterator;
+    eltotal = 0.0;
+    while(itvalues.moveNext()){
+      Pedido_detalle eldetalle =  itvalues.current;
+      eltotal = eltotal + eldetalle.total;
+    }
+    pedido.total=eltotal;
+
+    pedido.vendedor_id = _currentvendedor.id;
+    pedido.vendedornombre = _currentvendedor.nombre;
+
+
+    await service.salvaOnePedido(pedido);
+
+    //actionButtonRaised();
+    return pedido;
+
+  }
+
+
+
+
 
 
   // void testReceipt(NetworkPrinter printer) {
