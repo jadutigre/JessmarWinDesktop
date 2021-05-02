@@ -75,7 +75,7 @@ class _PedidosMantoState extends State<PedidosManto> {
 
   void setPrice(Precio value) {
     setState(() {
-      this._currentprecio = value;
+      this._currentprecio = (value==null)?new Precio():value;
       _cantidadController.text = '1';
       _precioController.text = this._currentprecio.precio.toString();
     });
@@ -183,6 +183,7 @@ class _PedidosMantoState extends State<PedidosManto> {
     if (pedidoid == 0) {
         newPedido();
         onepedido = pedido;
+        values = List<Pedido_detalle>();
     } else {
         onepedido = await service.getOnePedido(pedidoid.toString());
         var values = onepedido.pedidosdetalle;
@@ -260,6 +261,7 @@ class _PedidosMantoState extends State<PedidosManto> {
   }
 
   newPedido(){
+    pedido = new Pedido();
     pedido.id=0;
     pedido.fechapedido= DateTime.now().toString();
     pedido.clientes_id = 1;
@@ -1016,13 +1018,8 @@ class _PedidosMantoState extends State<PedidosManto> {
                                                         //hideClosePedido();
                                                         Pedido elpedido = await cierraPedido();
 
-                                                        Navigator.pushReplacement(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder: (context) => PdfPrevio(pedido : elpedido),
-                                                          ),
-                                                        );
 
+                                                        Navigator.pushNamed(context, 'pdfprevio', arguments: {'pedido': elpedido});
 
                                                   },
                                                 ),
@@ -1158,12 +1155,6 @@ class _PedidosMantoState extends State<PedidosManto> {
                         Pedido elpedido = await saveRecord();
                         actionButtonRaised();
 
-                        // Navigator.pushReplacement(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => PdfPrevio(pedido : elpedido),
-                        //   ),
-                        // );
 
                 },
                 heroTag: null,
@@ -1225,7 +1216,6 @@ class _PedidosMantoState extends State<PedidosManto> {
                   showEditIcon: true,
                   placeholder: true,
                   onTap: () {
-                    //Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosIntro( detalle: itemRow)));
                     showToast();
                     editRecord(itemRow);
                   },
@@ -1275,73 +1265,10 @@ class _PedidosMantoState extends State<PedidosManto> {
   }
 
 
-//  Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
-//
-//    Pedido pedido = snapshot.data["onepedido"];
-//    List<Pedido_detalle> values = pedido.pedidosdetalle;
-//
-//    return new ListView.builder(
-//      itemCount: values.length,
-//      itemBuilder: (BuildContext context, int index) {
-//        return new Column(
-//          children: <Widget>[
-//
-//            new ListTile(
-////              title: new Text(values[index].nombre+" "+values[index].nombre+" "+values[index].nombre+" "+values[index].nombre+" "+values[index].nombre+" "+values[index].nombre),
-//              //            title: new Text(AppLocalizations.of(context).reservafiltro +values[index].idreserva.toString()+ AppLocalizations.of(context).nombrefiltro+values[index].nombre),
-//              title: new Text(
-//                      values[index].id.toString()+" "+
-//                      values[index].articulo_id.toString()+" "+
-//                      values[index].cantidad.toString()+" "+
-//                      values[index].precio.toString()+" "+
-//                      values[index].total.toString()+" "
-//              ),
-////              subtitle: new Text(
-////                       "F.Llegada: "+
-////                      " F.Salida: "+
-////                      " Agencia: "+
-////                      " Procedencia: "+
-////                      " Paquete: "
-////              ),
-////              isThreeLine: true,
-//              onTap: (){
-//                //print("Valor "+values[index].nombre);
-//                // String url = 'http://10.194.18.59:8081/GroupSunsetPMSProxyServices/pms/dameReservacion';
-//                // Future<Huespedes>makeRequest()async {
-//                //   Map datos = {"pnohotel":"9","idreserva":"87196"};
-//                //   var response = await http.post(url,
-//                //   headers: {"Content-type":"application/x-www-form-urlencoded"},
-//                //   body: datos);
-//                //   print(response.body);
-//                //   if (response.statusCode == 200){
-//                //   _huesped = Huespedes.fromJson(json.decode(response.body));
-//                //   return (Huespedes.fromJson(json.decode(response.body)));
-//                //   }
-//                //   else {
-//                //   throw Exception('Failed to load post');
-//                //   }
-//                // }
-//                //Navigator.push(context, new MaterialPageRoute(builder: (context) => DetailPage(values[index])));
-//                //Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosIntro( detalle: values[index] )));
-//              },
-//            ),
-//            new Divider(height: 2.0,),
-//          ],
-//        );
-//      },
-//    );
-//  }
 
   Future<void> actionButtonRaised() {
 
-    Navigator.pushNamed(context, 'listapedidos');
-
-    // Navigator.pushReplacement(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => ListaPedidos(),
-    //   ),
-    // );
+    Navigator.pushNamedAndRemoveUntil(context,'listapedidos', (Route<dynamic> route) => false);
 
   }
 
@@ -1395,12 +1322,12 @@ class _PedidosMantoState extends State<PedidosManto> {
     pedido.hielera_id = _currenthielera.id;
     pedido.hieleranombre = _currenthielera.descripcion;
 
-    pedido.usrabrio_id = pedido.usrabrio_id;
+    pedido.usrabrio_id = onepedido.usrabrio_id;
     pedido.usrcerro_id = prefs.getInt("usuario_id");
     pedido.status = 'cerrado';
     final f = new DateFormat('yyyy-MM-dd hh:mm');
     pedido.fechapedido = f.format(
-        new DateFormat("yyyy-MM-dd hh:mm").parse(pedido.fechapedido));
+        new DateFormat("yyyy-MM-dd hh:mm").parse(onepedido.fechapedido));
     pedido.fechacierre = f.format(DateTime.now());
     pedido.areaentrega = _areaEntregaController.text;
     pedido.usuario = prefs.getString("usuario_clave");
@@ -1442,12 +1369,12 @@ class _PedidosMantoState extends State<PedidosManto> {
     // pedido.hielera_id = _currenthielera.id;
     // pedido.hieleranombre = _currenthielera.descripcion;
 
-    pedido.usrabrio_id = pedido.usrabrio_id;
+    pedido.usrabrio_id = onepedido.usrabrio_id;
     pedido.usrcancelo_id = prefs.getInt("usuario_id");
     pedido.status = 'cancelado';
     final f = new DateFormat('yyyy-MM-dd hh:mm');
     pedido.fechapedido = f.format(
-        new DateFormat("yyyy-MM-dd hh:mm").parse(pedido.fechapedido));
+        new DateFormat("yyyy-MM-dd hh:mm").parse(onepedido.fechapedido));
     pedido.fechacancelado = f.format(DateTime.now());
     pedido.areaentrega = _areaEntregaController.text;
     pedido.usuario = prefs.getString("usuario_clave");

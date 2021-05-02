@@ -762,11 +762,11 @@ class _RepPedidosAbiertosState extends State<RepPedidosAbiertos> {
     }
 
 
-    return new Scaffold(
-      // home:
-      //   Scaffold(
+    return new MaterialApp(
+      home:
+        Scaffold(
       extendBodyBehindAppBar: true,
-        appBar: AppBar(title: Text("Impresion de Ticket")),
+        appBar: AppBar(title: Text("Informes de Pedidos")),
 
 
 
@@ -781,28 +781,32 @@ class _RepPedidosAbiertosState extends State<RepPedidosAbiertos> {
         Column(
           children: <Widget>[
 
+            SizedBox(
+              height: 40,
+            ),
 
-                // Expanded(
-                // flex: 1, // 60%
-                // child:
-                //     Container(
-                //       color: Colors.blue,
-                //       child: Row(
-                //
-                //       children: [
-                //               RaisedButton(
-                //                 onPressed: actionButtonRaised,
-                //                 child:Row(
-                //                   children: <Widget>[
-                //                     Text('Lista Pedidos'),
-                //                     Icon(Icons.arrow_forward_ios),
-                //                   ],
-                //                 ),
-                //               ),
-                //         ]
-                //        ),
-                //     )
-                // ),
+
+            Expanded(
+                flex: 1, // 60%
+                child:
+                Container(
+                  color: Colors.blue,
+                  child: Row(
+
+                      children: [
+                        RaisedButton(
+                          onPressed: actionButtonRaised,
+                          child:Row(
+                            children: <Widget>[
+                              Text('Forma Reporte Pedidos'),
+                              Icon(Icons.arrow_forward_ios),
+                            ],
+                          ),
+                        ),
+                      ]
+                  ),
+                )
+            ),
 
                 Expanded(
                     flex: 6, // 60%
@@ -816,7 +820,7 @@ class _RepPedidosAbiertosState extends State<RepPedidosAbiertos> {
                          )
         ]
        ),
-      // )
+      )
     );
     //);
 
@@ -825,14 +829,7 @@ class _RepPedidosAbiertosState extends State<RepPedidosAbiertos> {
 
   Future<void> actionButtonRaised() {
 
-    // Navigator.pushReplacement(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => FormInformes(),
-    //   ),
-    // );
-
-    Navigator.pushNamed(context, 'forminformes');
+    Navigator.pushNamedAndRemoveUntil(context,'forminformes', (Route<dynamic> route) => false);
 
   }
 

@@ -168,7 +168,7 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
                                   ListTile(
                                     title:
                                     new Row(children: <Widget>[
-                                      new Text("INFORMES",
+                                      new Text("INFORMES DE PEDIDOS",
                                         style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 12.0),)
                                     ], mainAxisAlignment: MainAxisAlignment.center,),
                                     // subtitle: new Row(children: <Widget>[

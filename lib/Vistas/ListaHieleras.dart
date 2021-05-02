@@ -126,7 +126,7 @@ class _ListaHielerasState extends State<ListaHieleras> {
 
               FloatingActionButton(
                 child: Icon(
-                    Icons.arrow_back
+                    Icons.home
                 ),
                 onPressed:() {
 

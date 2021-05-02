@@ -364,7 +364,7 @@ height: 40,
     return new Scaffold(
 
         appBar: new AppBar(
-          title: new Text("Captura Clientes"),
+          title: new Text("Informes de Pedidos"),
         ),
 
         floatingActionButton: Column(
@@ -374,15 +374,21 @@ height: 40,
 
 
 
-              // FloatingActionButton(
-              //   child: Icon(
-              //       Icons.arrow_back
-              //   ),
-              //   onPressed: () {
-              //     //gotoListaVendedores();
-              //   },
-              //   heroTag: null,
-              // ),
+              FloatingActionButton(
+
+                child: Icon(
+                  Icons.home,
+                ),
+                onPressed: () async {
+                  Navigator.pushNamed(context, 'menuprincipal');
+                },
+                heroTag: null,
+                tooltip: "Ir al Menu",
+              ),
+
+              SizedBox(
+                height: 10,
+              ),
 
 
 

@@ -111,30 +111,60 @@ class _ListaPedidosState extends State<ListaPedidos> {
         appBar: new AppBar(
           title: new Text("Lista de Pedidos"),
         ),
-        floatingActionButton: new FloatingActionButton(
-          child: new Icon(Icons.add),
-          onPressed: () async  {
 
-            // TODO add your logic here to add stuff
-            Pedido pedido = new Pedido();
-            pedido.id=0;
-            pedido.fechapedido= DateTime.now().toString();
-            pedido.clientes_id = 1;
-            pedido.vendedor_id = 1;
-            pedido.tipopedido_id = 1;
-            pedido.pedidosdetalle = List<Pedido_detalle>();
-            pedido.usuario = "";
-            pedido.areaentrega="";
+      floatingActionButton: Column(
 
-            final SharedPreferences prefs = await _prefs;
-            prefs.setInt("pedidoid", pedido.id);
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
 
-            Navigator.pushNamed(context, 'pedidosmanto');
+            FloatingActionButton(
 
-            //Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosManto( pedido: pedido)));
+              child: Icon(
+                Icons.home,
+              ),
+              onPressed: () async {
+                Navigator.pushNamed(context, 'menuprincipal');
+              },
+              heroTag: null,
+              tooltip: "Ir al Menu",
+            ),
 
-          },
-        ),
+            SizedBox(
+              height: 10,
+            ),
+
+            new FloatingActionButton(
+              child: new Icon(Icons.add),
+              onPressed: () async  {
+
+                // TODO add your logic here to add stuff
+                Pedido pedido = new Pedido();
+                pedido.id=0;
+                pedido.fechapedido= DateTime.now().toString();
+                pedido.clientes_id = 1;
+                pedido.vendedor_id = 1;
+                pedido.tipopedido_id = 1;
+                pedido.pedidosdetalle = List<Pedido_detalle>();
+                pedido.usuario = "";
+                pedido.areaentrega="";
+
+                final SharedPreferences prefs = await _prefs;
+                prefs.setInt("pedidoid", pedido.id);
+
+                Navigator.pushNamed(context, 'pedidosmanto');
+
+
+              },
+              heroTag: null,
+              tooltip: "Agregar Pedido",
+            ),
+
+         ]
+      ),
+
+
+
+
         body: new SingleChildScrollView(
           child: futureBuilder,
         )
@@ -182,10 +212,11 @@ class _ListaPedidosState extends State<ListaPedidos> {
               showEditIcon: true,
               placeholder: false,
               onTap:() async {
-              //Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosManto( pedido: itemRow)));
+
+
                 final SharedPreferences prefs = await _prefs;
                 prefs.setInt("pedidoid", itemRow.id);
-              Navigator.pushNamed(context, 'pedidosmanto');
+                Navigator.pushNamed(context, 'pedidosmanto');
 
             },
             ),
@@ -278,24 +309,6 @@ class _ListaPedidosState extends State<ListaPedidos> {
 //              ),
 //              isThreeLine: true,
               onTap: () async {
-                //print("Valor "+values[index].nombre);
-                // String url = 'http://10.194.18.59:8081/GroupSunsetPMSProxyServices/pms/dameReservacion';
-                // Future<Huespedes>makeRequest()async {
-                //   Map datos = {"pnohotel":"9","idreserva":"87196"};
-                //   var response = await http.post(url,
-                //   headers: {"Content-type":"application/x-www-form-urlencoded"},
-                //   body: datos);
-                //   print(response.body);
-                //   if (response.statusCode == 200){
-                //   _huesped = Huespedes.fromJson(json.decode(response.body));
-                //   return (Huespedes.fromJson(json.decode(response.body)));
-                //   }
-                //   else {
-                //   throw Exception('Failed to load post');
-                //   }
-                // }
-                //Navigator.push(context, new MaterialPageRoute(builder: (context) => DetailPage(values[index])));
-                //Navigator.push(context, new MaterialPageRoute(builder: (context) => PedidosManto( pedido: values[index])));
                 final SharedPreferences prefs = await _prefs;
                 prefs.setInt("pedidoid", values[index].id);
                 Navigator.pushNamed(context, 'pedidosmanto');

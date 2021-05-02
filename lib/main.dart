@@ -1,8 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:jessmarwindesk/Tools/PdfPrevio.dart';
 import 'package:jessmarwindesk/Tools/repPedidosAbiertos.dart';
 import 'package:jessmarwindesk/Vistas/FormArticulos.dart';
+import 'package:jessmarwindesk/Vistas/FormClientePrecios.dart';
+import 'package:jessmarwindesk/Vistas/FormClientes.dart';
 import 'package:jessmarwindesk/Vistas/ListaArticulos.dart';
 import 'package:jessmarwindesk/Vistas/ListaClientes.dart';
 import 'package:jessmarwindesk/Vistas/ListaHieleras.dart';
@@ -35,7 +38,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
 
-
+      debugShowCheckedModeBanner: false,
       localizationsDelegates: [
         AppLocalizationsDelegate(),
         GlobalMaterialLocalizations.delegate,
@@ -74,12 +77,15 @@ class MyApp extends StatelessWidget {
         "listapedidos":(BuildContext context)=> new ListaPedidos(),
         "pedidosmanto":(BuildContext context)=> new PedidosManto(),
         "listaclientes":(BuildContext context)=> new ListaClientes(),
+        "formclientes":(BuildContext context)=> new FormClientes(),
+        "formclienteprecios":(BuildContext context)=> new FormClientePrecios(),
         "listaarticulos":(BuildContext context)=> new ListaArticulos(),
         "listavendedores":(BuildContext context)=> new ListaVendedores(),
         "listahieleras":(BuildContext context)=> new ListaHieleras(),
         "menuprincipal":(BuildContext context)=> new MenuPrincipal(),
         "forminformes":(BuildContext context)=> new FormInformes(),
         "reppedidosabiertos":(BuildContext context)=> new RepPedidosAbiertos(),
+        "pdfprevio":(BuildContext context)=> PdfPrevio(),
       },
       home: new LoginVista(),
       title:'Tarjeta de Registro',

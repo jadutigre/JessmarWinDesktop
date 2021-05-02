@@ -626,6 +626,7 @@ class _FormClientesState extends State<FormClientes> {
                 ),
                 onPressed: () {
                      saveRecord();
+                     gotoListaClientes();
                 },
                 heroTag: null,
               )
@@ -647,8 +648,10 @@ class _FormClientesState extends State<FormClientes> {
   }
 
   gotoListaClientes(){
-    Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context) => ListaClientes()),
-            (Route<dynamic> route) => false);
+
+    //Navigator.pushNamedAndRemoveUntil(context,'listaclientes', (Route<dynamic> route) => false);
+    Navigator.pushNamed(context, 'listaclientes');
+
   }
 
 
@@ -750,12 +753,14 @@ class _FormClientesState extends State<FormClientes> {
 
   Future<void> actionButtonRaised() {
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ListaClientes(),
-      ),
-    );
+    // Navigator.pushReplacement(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => ListaClientes(),
+    //   ),
+    // );
+
+    Navigator.pushNamed(context, 'listaclientes');
 
   }
 
@@ -854,7 +859,7 @@ class _FormClientesState extends State<FormClientes> {
       cliente.rfc = _rfcController.text;
 
       await service.salvaOneClientes(cliente);
-      actionButtonRaised();
+      // actionButtonRaised();
 
   }
 

@@ -111,7 +111,7 @@ class _ListaVendedoresState extends State<ListaVendedores> {
 
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text("Lista de Clientes"),
+          title: new Text("Lista de Vendedores"),
         ),
 
 
@@ -123,7 +123,7 @@ class _ListaVendedoresState extends State<ListaVendedores> {
 
               FloatingActionButton(
                 child: Icon(
-                    Icons.arrow_back
+                    Icons.home
                 ),
                 onPressed:() {
 

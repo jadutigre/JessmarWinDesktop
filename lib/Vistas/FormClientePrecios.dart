@@ -189,6 +189,7 @@ class _FormClientePreciosState extends State<FormClientePrecios> {
                 ),
                 onPressed: () {
                   saveRecord();
+                  Navigator.pushNamed(context, 'listaclientes');
                 },
                 heroTag: null,
               )

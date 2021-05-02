@@ -120,21 +120,17 @@ class _ListaClientesState extends State<ListaClientes> {
 
 
 
-              // FloatingActionButton(
-              //   child: Icon(
-              //       Icons.arrow_back
-              //   ),
-              //   onPressed:() {
-              //
-              //     Navigator.pushAndRemoveUntil(
-              //         context,
-              //         MaterialPageRoute(builder: (BuildContext context) =>  MenuPrincipal()),
-              //             (Route<dynamic> route) => false
-              //     );
-              //
-              //   },
-              //   heroTag: null,
-              // ),
+              FloatingActionButton(
+
+                child: Icon(
+                  Icons.home,
+                ),
+                onPressed: () async {
+                  Navigator.pushNamed(context, 'menuprincipal');
+                },
+                heroTag: null,
+                tooltip: "Ir al Menu",
+              ),
 
               SizedBox(
                 height: 10,
@@ -153,12 +149,15 @@ class _ListaClientesState extends State<ListaClientes> {
                   cliente.pais_id=1;
                   cliente.estado_id=3;
                   cliente.usocfdi_id=22;
-                  Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context) => FormClientes(cliente: cliente)),
-                          (Route<dynamic> route) => false);
+
+                  // Navigator.pushAndRemoveUntil(context, new MaterialPageRoute(builder: (context) => FormClientes(cliente: cliente)),
+                  //         (Route<dynamic> route) => false);
+                  Navigator.pushNamed(context, 'formclientes');
 
 
                 },
                 heroTag: null,
+                tooltip: "Agregar Cliente",
               )
 
 

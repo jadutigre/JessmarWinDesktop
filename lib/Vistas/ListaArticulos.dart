@@ -120,7 +120,7 @@ class _ListaArticulosState extends State<ListaArticulos> {
 
               FloatingActionButton(
                 child: Icon(
-                    Icons.arrow_back
+                    Icons.home
                 ),
                 onPressed:() {
 

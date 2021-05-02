@@ -2,15 +2,16 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:jessmarwindesk/Domains/pedido.dart';
+import 'package:jessmarwindesk/Service/jessmarService.dart';
 import 'package:jessmarwindesk/Vistas/ListaPedidos.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PdfPrevio extends StatefulWidget  {
-  Pedido pedido;
-   PdfPrevio({Key key, @required this.pedido}) : super(key: key);
+   PdfPrevio({Key key}) : super(key: key);
   _PdfPrevioState createState() => _PdfPrevioState();
 }
 
@@ -18,10 +19,24 @@ class PdfPrevio extends StatefulWidget  {
 
 class _PdfPrevioState extends State<PdfPrevio> {
 
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  JessmarService service = JessmarService();
+
+
 
   @override
   Widget build(BuildContext context) {
-    Pedido elpedido = widget.pedido;
+
+    final Map arguments = ModalRoute.of(context).settings.arguments as Map;
+
+    Pedido pedido;
+
+    if (arguments != null){
+      pedido =   arguments['pedido'];
+    }
+
+    Pedido elpedido = pedido;
 
     const tableHeaders = [
       'ID#',
@@ -672,9 +687,9 @@ class _PdfPrevioState extends State<PdfPrevio> {
     }
 
 
-    return new Scaffold(
-      // home:
-      //   Scaffold(
+    return new MaterialApp(
+      home:
+        Scaffold(
         appBar: AppBar(title: Text("Impresion de Ticket")),
 
 
@@ -725,7 +740,7 @@ class _PdfPrevioState extends State<PdfPrevio> {
                          )
         ]
        ),
-      // )
+       )
     );
     //);
 
@@ -734,12 +749,7 @@ class _PdfPrevioState extends State<PdfPrevio> {
 
   Future<void> actionButtonRaised() {
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ListaPedidos(),
-      ),
-    );
+    Navigator.pushNamedAndRemoveUntil(context,'listapedidos', (Route<dynamic> route) => false);
 
   }
 

@@ -30,8 +30,8 @@ import 'package:jessmarwindesk/Domains/vendedores.dart';
 
 class JessmarService{
 
-  //String url = 'http://www.spcsystems-cancun.com/JessmarServices/jessmar';
-  String url = 'http://localhost:8084/JessmarServices/jessmar';
+ String url = 'https://www.spcsystems-cancun.com/JessmarServices/jessmar';
+ // String url = 'http://localhost:8084/JessmarServices/jessmar';
 
 
   Future<List<Articulo>> getListaArticulos() async {
